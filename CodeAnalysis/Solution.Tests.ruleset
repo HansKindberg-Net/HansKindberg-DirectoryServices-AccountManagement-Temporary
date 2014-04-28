@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RuleSet Name="Custom rules for test projects in this solution" ToolsVersion="10.0">
+	<IncludeAll Action="Error" />
+	<Rules AnalyzerId="Microsoft.Analyzers.ManagedCodeAnalysis" RuleNamespace="Microsoft.Rules.Managed">
+		<Rule Id="CA1020" Action="None" />
+		<Rule Id="CA1707" Action="None" />
+		<Rule Id="CA1903" Action="None" />
+		<Rule Id="CA2243" Action="None" />
+	</Rules>
+</RuleSet>

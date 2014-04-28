@@ -1,0 +1,82 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30110.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Properties", "Properties", "{01AF09D3-9A20-4967-A0DC-D59AFD104EC3}"
+	ProjectSection(SolutionItems) = preProject
+		Properties\Solution-AssemblyInfo.cs = Properties\Solution-AssemblyInfo.cs
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CodeAnalysis", "CodeAnalysis", "{7B25A1DC-8061-4302-9F14-3CA1568E328B}"
+	ProjectSection(SolutionItems) = preProject
+		CodeAnalysis\Solution.ruleset = CodeAnalysis\Solution.ruleset
+		CodeAnalysis\Solution.Tests.ruleset = CodeAnalysis\Solution.Tests.ruleset
+		CodeAnalysis\SolutionDictionary.xml = CodeAnalysis\SolutionDictionary.xml
+		CodeAnalysis\SolutionSuppressions.cs = CodeAnalysis\SolutionSuppressions.cs
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Signing", "Signing", "{E3499B47-B048-4B32-B191-7E24C803F020}"
+	ProjectSection(SolutionItems) = preProject
+		Signing\HansKindberg.snk = Signing\HansKindberg.snk
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{84685339-7EF9-4E9B-99BF-EBDD89C05586}"
+	ProjectSection(SolutionItems) = preProject
+		ReadMe.md = ReadMe.md
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HansKindberg.DirectoryServices.AccountManagement", "HansKindberg.DirectoryServices.AccountManagement\HansKindberg.DirectoryServices.AccountManagement.csproj", "{90BCC83F-9F6B-442C-AC04-8E778FD6019D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HansKindberg.DirectoryServices.AccountManagement.IoC.StructureMap", "HansKindberg.DirectoryServices.AccountManagement.IoC.StructureMap\HansKindberg.DirectoryServices.AccountManagement.IoC.StructureMap.csproj", "{9992ED0A-AD0E-4B0F-8619-6BF537DADD62}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{15B5FCE5-1ADF-447E-95F2-02E7763ADBEB}"
+	ProjectSection(SolutionItems) = preProject
+		Build\Build.props = Build\Build.props
+		Build\Build.targets = Build\Build.targets
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{7BDAE68B-20CF-4DE3-8F11-627AA70485E3}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.config = .nuget\NuGet.config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HansKindberg.DirectoryServices.AccountManagement.IntegrationTests", "HansKindberg.DirectoryServices.AccountManagement.IntegrationTests\HansKindberg.DirectoryServices.AccountManagement.IntegrationTests.csproj", "{47F0ED9F-EC89-469E-8E42-6103DE73B54D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HansKindberg.DirectoryServices.AccountManagement.ShimTests", "HansKindberg.DirectoryServices.AccountManagement.ShimTests\HansKindberg.DirectoryServices.AccountManagement.ShimTests.csproj", "{90DF0459-C923-41C8-88AE-8D10AB1D095B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HansKindberg.DirectoryServices.AccountManagement.UnitTests", "HansKindberg.DirectoryServices.AccountManagement.UnitTests\HansKindberg.DirectoryServices.AccountManagement.UnitTests.csproj", "{19735252-B6D2-458B-A57E-33BE057140AC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{90BCC83F-9F6B-442C-AC04-8E778FD6019D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90BCC83F-9F6B-442C-AC04-8E778FD6019D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90BCC83F-9F6B-442C-AC04-8E778FD6019D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90BCC83F-9F6B-442C-AC04-8E778FD6019D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9992ED0A-AD0E-4B0F-8619-6BF537DADD62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9992ED0A-AD0E-4B0F-8619-6BF537DADD62}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9992ED0A-AD0E-4B0F-8619-6BF537DADD62}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9992ED0A-AD0E-4B0F-8619-6BF537DADD62}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47F0ED9F-EC89-469E-8E42-6103DE73B54D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47F0ED9F-EC89-469E-8E42-6103DE73B54D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47F0ED9F-EC89-469E-8E42-6103DE73B54D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47F0ED9F-EC89-469E-8E42-6103DE73B54D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{90DF0459-C923-41C8-88AE-8D10AB1D095B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90DF0459-C923-41C8-88AE-8D10AB1D095B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90DF0459-C923-41C8-88AE-8D10AB1D095B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90DF0459-C923-41C8-88AE-8D10AB1D095B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{19735252-B6D2-458B-A57E-33BE057140AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19735252-B6D2-458B-A57E-33BE057140AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19735252-B6D2-458B-A57E-33BE057140AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{19735252-B6D2-458B-A57E-33BE057140AC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

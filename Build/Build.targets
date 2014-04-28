@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<PropertyGroup>
+		<BuildDependsOn>
+			$(BuildDependsOn);
+			CreateNuGetPackage;
+		</BuildDependsOn>
+	</PropertyGroup>
+	<Target Name="CollectAssemblyInformation">
+		<ReadLinesFromFile
+			File="$(SolutionDir)Properties\Solution-AssemblyInfo.cs"
+		>
+			<Output ItemName="AssemblyInformationLines" TaskParameter="Lines" />
+		</ReadLinesFromFile>
+		<ItemGroup>
+			<AssemblyCompanyLine Include="%(AssemblyInformationLines.Identity)" Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('%(Identity)', '\x5bassembly\x3a\s*AssemblyCompany\x28&quot;'))" />
+			<AssemblyInformationalVersionLine Include="%(AssemblyInformationLines.Identity)" Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('%(Identity)', '\x5bassembly\x3a\s*AssemblyInformationalVersion\x28&quot;'))" />
+		</ItemGroup>
+		<PropertyGroup>
+			<_AssemblyCompany Condition="$(_AssemblyCompany) == ''">@(AssemblyCompanyLine)</_AssemblyCompany>
+			<AssemblyCompany Condition="$(AssemblyCompany) == ''">$(_AssemblyCompany.Replace('[', '').Replace(']', '').Replace('(', '').Replace(')', '').Replace(':', '').Replace('&quot;', '').Replace('assembly', '').Replace('AssemblyCompany', '').Trim())</AssemblyCompany>
+			<_AssemblyInformationalVersion Condition="$(_AssemblyInformationalVersion) == ''">@(AssemblyInformationalVersionLine)</_AssemblyInformationalVersion>
+			<AssemblyInformationalVersion Condition="$(AssemblyInformationalVersion) == ''">$(_AssemblyInformationalVersion.Replace('[', '').Replace(']', '').Replace('(', '').Replace(')', '').Replace(':', '').Replace('&quot;', '').Replace('assembly', '').Replace('AssemblyInformationalVersion', '').Trim())</AssemblyInformationalVersion>
+		</PropertyGroup>
+	</Target>
+	<PropertyGroup>
+		<CreateNuGetPackageDependsOn>
+			CollectAssemblyInformation;
+		</CreateNuGetPackageDependsOn>
+	</PropertyGroup>
+	<Target Name="CreateNuGetPackage" DependsOnTargets="$(CreateNuGetPackageDependsOn)">
+		<PropertyGroup>
+			<Properties>Configuration="$(Configuration)"</Properties>
+		</PropertyGroup>
+		<Exec
+			Command='$(SolutionDir).nuget\NuGet.exe pack "$(ProjectPath)" -IncludeReferencedProjects -OutputDirectory $(TargetDir) -Properties $(Properties) -Verbosity "$(NuGetVerbosity)"'
+		/>
+		<Message
+			Importance="$(MessageImportance)"
+			Text="Creating NuGet package '$(MSBuildProjectName).$(AssemblyInformationalVersion)', $(SolutionDir).nuget\NuGet.exe pack '$(ProjectPath)' -IncludeReferencedProjects -OutputDirectory $(TargetDir) -Properties $(Properties) -Verbosity '$(NuGetVerbosity)'."
+		/>
+	</Target>
+</Project>
