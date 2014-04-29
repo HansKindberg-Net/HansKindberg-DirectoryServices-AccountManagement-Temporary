@@ -73,6 +73,7 @@
       <Link>CodeAnalysis\SolutionSuppressions.cs</Link>
     </Compile>
     <Compile Include="ComputerPrincipalPrerequisiteTest.cs" />
+    <Compile Include="Connections\PrincipalConnectionTest.cs" />
     <Compile Include="GroupPrincipalPrerequisiteTest.cs" />
     <Compile Include="UserPrincipalPrerequisiteTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

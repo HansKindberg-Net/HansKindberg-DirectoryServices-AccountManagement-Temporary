@@ -48,15 +48,21 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AdvancedFiltersWrapper.cs" />
+    <Compile Include="Connections\IPrincipalConnection.cs" />
+    <Compile Include="Extensions\DefaultPrincipalContextExtension.cs" />
     <Compile Include="Extensions\DefaultPrincipalWrapperExtension.cs" />
+    <Compile Include="Extensions\IPrincipalContextExtension.cs" />
     <Compile Include="Extensions\IPrincipalWrapperExtension.cs" />
+    <Compile Include="Extensions\PrincipalContextExtension.cs" />
     <Compile Include="Extensions\PrincipalWrapperExtension.cs" />
+    <Compile Include="IPrincipalContextInternal.cs" />
     <Compile Include="IPrincipalRepository.cs" />
     <Compile Include="IGroupPrincipalRepository.cs" />
     <Compile Include="IComputerPrincipalRepository.cs" />
     <Compile Include="IUserPrincipalRepository.cs" />
     <Compile Include="PrincipalCollectionEnumeratorWrapper.cs" />
     <Compile Include="PrincipalCollectionWrapper.cs" />
+    <Compile Include="PrincipalContextWrapper.cs" />
     <Compile Include="PrincipalSearchResult.cs" />
     <Compile Include="QueryFilters\IAuthenticablePrincipalQueryFilter.cs" />
     <Compile Include="QueryFilters\IComputerPrincipalQueryFilter.cs" />

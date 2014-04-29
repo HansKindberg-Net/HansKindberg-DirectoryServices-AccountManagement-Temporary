@@ -4,7 +4,7 @@
 	{
 		#region Methods
 
-		IPrincipalContext Parse(string connectionString);
+		IPrincipalConnection Parse(string connectionString);
 
 		#endregion
 	}

@@ -54,7 +54,8 @@ namespace HansKindberg.DirectoryServices.AccountManagement
 
 		protected internal virtual PrincipalContext CreateConcretePrincipalContext()
 		{
-			return new PrincipalContext(this.PrincipalContext.ContextType, this.PrincipalContext.Name, this.PrincipalContext.Container, this.PrincipalContext.Options, this.PrincipalContext.UserName, this.PrincipalContext.Password);
+			return new PrincipalContext(ContextType.Machine);
+			//return new PrincipalContext(this.PrincipalContext.ContextType, this.PrincipalContext.Name, this.PrincipalContext.Container, this.PrincipalContext.Options, this.PrincipalContext.UserName, this.PrincipalContext.Password);
 		}
 
 		protected internal abstract T CreateConcreteQueryFilter(TQueryFilter queryFilter);

@@ -88,7 +88,7 @@ namespace HansKindberg.DirectoryServices.AccountManagement.Connections
 			return dictionary;
 		}
 
-		public virtual IPrincipalContext Parse(string connectionString)
+		public virtual IPrincipalConnection Parse(string connectionString)
 		{
 			if(connectionString == null)
 				throw new ArgumentNullException("connectionString");
