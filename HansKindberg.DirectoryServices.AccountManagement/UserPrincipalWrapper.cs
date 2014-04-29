@@ -5,12 +5,40 @@ using System.Linq;
 
 namespace HansKindberg.DirectoryServices.AccountManagement
 {
-	[SuppressMessage("Microsoft.Design", "CA1063:ImplementIDisposableCorrectly", Justification = "This is a wrapper.")]
-	public class UserPrincipalWrapper : AuthenticablePrincipalWrapper<UserPrincipal>, IUserPrincipal
+	public class UserPrincipalWrapper : UserPrincipalWrapper<UserPrincipal>
 	{
 		#region Constructors
 
 		public UserPrincipalWrapper(UserPrincipal userPrincipal) : base(userPrincipal, "userPrincipal") {}
+
+		#endregion
+
+		#region Methods
+
+		public static UserPrincipalWrapper FromUserPrincipal(UserPrincipal userPrincipal)
+		{
+			return userPrincipal;
+		}
+
+		#endregion
+
+		#region Implicit operator
+
+		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "Should be disposed by the caller. ")]
+		public static implicit operator UserPrincipalWrapper(UserPrincipal userPrincipal)
+		{
+			return userPrincipal != null ? new UserPrincipalWrapper(userPrincipal) : null;
+		}
+
+		#endregion
+	}
+
+	[SuppressMessage("Microsoft.Design", "CA1063:ImplementIDisposableCorrectly", Justification = "This is a wrapper.")]
+	public abstract class UserPrincipalWrapper<T> : AuthenticablePrincipalWrapper<T>, IUserPrincipal where T : UserPrincipal
+	{
+		#region Constructors
+
+		protected UserPrincipalWrapper(T userPrincipal, string parameterName) : base(userPrincipal, parameterName) {}
 
 		#endregion
 
@@ -61,25 +89,6 @@ namespace HansKindberg.DirectoryServices.AccountManagement
 		{
 			get { return this.Principal.VoiceTelephoneNumber; }
 			set { this.Principal.VoiceTelephoneNumber = value; }
-		}
-
-		#endregion
-
-		#region Methods
-
-		public static UserPrincipalWrapper FromUserPrincipal(UserPrincipal userPrincipal)
-		{
-			return userPrincipal;
-		}
-
-		#endregion
-
-		#region Implicit operator
-
-		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "Should be disposed by the caller. ")]
-		public static implicit operator UserPrincipalWrapper(UserPrincipal userPrincipal)
-		{
-			return userPrincipal != null ? new UserPrincipalWrapper(userPrincipal) : null;
 		}
 
 		#endregion

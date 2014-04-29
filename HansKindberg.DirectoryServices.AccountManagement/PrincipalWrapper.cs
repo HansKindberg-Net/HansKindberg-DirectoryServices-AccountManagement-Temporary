@@ -8,7 +8,36 @@ using HansKindberg.DirectoryServices.AccountManagement.Extensions;
 
 namespace HansKindberg.DirectoryServices.AccountManagement
 {
-	public abstract class PrincipalWrapper<T> : IPrincipal, IPrincipalInternal<T> where T : Principal
+	public class PrincipalWrapper : PrincipalWrapper<Principal>
+	{
+		#region Constructors
+
+		public PrincipalWrapper(Principal principal) : base(principal, "principal") {}
+
+		#endregion
+
+		#region Methods
+
+		public static PrincipalWrapper FromPrincipal(Principal principal)
+		{
+			return principal;
+		}
+
+		#endregion
+
+		#region Implicit operator
+
+		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "Should be disposed by the caller. ")]
+		public static implicit operator PrincipalWrapper(Principal principal)
+		{
+			return principal != null ? new PrincipalWrapper(principal) : null;
+		}
+
+		#endregion
+	}
+
+	[SuppressMessage("Microsoft.Design", "CA1063:ImplementIDisposableCorrectly", Justification = "This is a wrapper.")]
+	public abstract class PrincipalWrapper<T> : IPrincipalInternal<T> where T : Principal
 	{
 		#region Fields
 
@@ -29,6 +58,16 @@ namespace HansKindberg.DirectoryServices.AccountManagement
 		#endregion
 
 		#region Properties
+
+		public virtual Principal BasicPrincipal
+		{
+			get { return this.Principal; }
+		}
+
+		public virtual IPrincipalContext Context
+		{
+			get { return (PrincipalContextWrapper) this.Principal.Context; }
+		}
 
 		public virtual ContextType ContextType
 		{

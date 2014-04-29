@@ -9,6 +9,7 @@ namespace HansKindberg.DirectoryServices.AccountManagement
 	{
 		#region Properties
 
+		IPrincipalContext Context { get; }
 		ContextType ContextType { get; }
 		string Description { get; set; }
 		string DisplayName { get; set; }

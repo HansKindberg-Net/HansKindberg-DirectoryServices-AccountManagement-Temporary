@@ -80,10 +80,6 @@ namespace HansKindberg.DirectoryServices.AccountManagement
 
 		#endregion
 
-
-
-
-
 		#region Implicit operator
 
 		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "Should be disposed by the caller. ")]

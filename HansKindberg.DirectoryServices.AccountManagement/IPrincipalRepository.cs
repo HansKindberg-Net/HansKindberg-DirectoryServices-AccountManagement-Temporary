@@ -1,9 +1,8 @@
 using HansKindberg.DirectoryServices.AccountManagement.Collections.Generic;
-using HansKindberg.DirectoryServices.AccountManagement.QueryFilters;
 
 namespace HansKindberg.DirectoryServices.AccountManagement
 {
-	public interface IPrincipalRepository<T, in TQueryFilter> where T : IPrincipal where TQueryFilter : class, IPrincipalQueryFilter
+	public interface IPrincipalRepository<T> where T : IPrincipal
 	{
 		#region Properties
 
@@ -15,7 +14,7 @@ namespace HansKindberg.DirectoryServices.AccountManagement
 		#region Methods
 
 		void Delete(T principal);
-		IDisposableEnumerable<T> Find(TQueryFilter queryFilter);
+		IDisposableEnumerable<T> Find(T queryFilter);
 		void Save(T principal);
 
 		#endregion

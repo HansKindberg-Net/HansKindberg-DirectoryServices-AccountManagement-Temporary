@@ -13,7 +13,17 @@ namespace HansKindberg.DirectoryServices.AccountManagement.Extensions
 			return this.GetPrincipal<Principal>(principal);
 		}
 
+		public virtual Principal GetPrincipal(IPrincipal principal, bool throwExceptionIfUnsuccessful)
+		{
+			return this.GetPrincipal<Principal>(principal, throwExceptionIfUnsuccessful);
+		}
+
 		public virtual T GetPrincipal<T>(IPrincipal principal) where T : Principal
+		{
+			return this.GetPrincipal<T>(principal, true);
+		}
+
+		public virtual T GetPrincipal<T>(IPrincipal principal, bool throwExceptionIfUnsuccessful) where T : Principal
 		{
 			if(principal == null)
 				return null;
@@ -23,7 +33,10 @@ namespace HansKindberg.DirectoryServices.AccountManagement.Extensions
 			if(principalInternal != null)
 				return principalInternal.Principal;
 
-			throw new NotImplementedException(string.Format(CultureInfo.InvariantCulture, "The object of type \"{0}\" does not implement \"{1}\".", principal.GetType(), typeof(IPrincipalInternal<>)));
+			if(throwExceptionIfUnsuccessful)
+				throw new NotImplementedException(string.Format(CultureInfo.InvariantCulture, "The object of type \"{0}\" does not implement \"{1}\".", principal.GetType(), typeof(IPrincipalInternal<>)));
+
+			return null;
 		}
 
 		#endregion

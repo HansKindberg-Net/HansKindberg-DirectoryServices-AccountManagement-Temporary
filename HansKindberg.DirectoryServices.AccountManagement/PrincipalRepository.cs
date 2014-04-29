@@ -1,32 +1,42 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.DirectoryServices;
 using System.DirectoryServices.AccountManagement;
+using System.Globalization;
+using System.Linq;
+using System.Reflection;
 using HansKindberg.DirectoryServices.AccountManagement.Collections.Generic;
+using HansKindberg.DirectoryServices.AccountManagement.Connections;
 using HansKindberg.DirectoryServices.AccountManagement.Extensions;
 using HansKindberg.DirectoryServices.AccountManagement.QueryFilters;
 
 namespace HansKindberg.DirectoryServices.AccountManagement
 {
-	[SuppressMessage("Microsoft.Design", "CA1005:AvoidExcessiveParametersOnGenericTypes")]
-	public abstract class PrincipalRepository<T, TInterface, TQueryFilter> : IPrincipalRepository<TInterface, TQueryFilter> where T : Principal where TInterface : IPrincipal where TQueryFilter : class, IPrincipalQueryFilter
+	public class PrincipalRepository : PrincipalRepository<IPrincipal>
+	{
+		#region Constructors
+
+		public PrincipalRepository(IPrincipalConnection principalConnection) : base(principalConnection) {}
+
+		#endregion
+	}
+
+	public abstract class PrincipalRepository<T> : IPrincipalRepository<T> where T : IPrincipal
 	{
 		#region Fields
 
 		private int _pageSize = int.MaxValue;
-		private readonly IPrincipalContext _principalContext;
+		private readonly IPrincipalConnection _principalConnection;
 
 		#endregion
 
 		#region Constructors
 
-		protected PrincipalRepository(IPrincipalContext principalContext)
+		protected PrincipalRepository(IPrincipalConnection principalConnection)
 		{
-			if(principalContext == null)
-				throw new ArgumentNullException("principalContext");
+			if(principalConnection == null)
+				throw new ArgumentNullException("principalConnection");
 
-			this._principalContext = principalContext;
+			this._principalConnection = principalConnection;
 		}
 
 		#endregion
@@ -39,9 +49,9 @@ namespace HansKindberg.DirectoryServices.AccountManagement
 			set { this._pageSize = value; }
 		}
 
-		protected internal virtual IPrincipalContext PrincipalContext
+		protected internal virtual IPrincipalConnection PrincipalConnection
 		{
-			get { return this._principalContext; }
+			get { return this._principalConnection; }
 		}
 
 		public virtual int? SizeLimit { get; set; }
@@ -50,61 +60,155 @@ namespace HansKindberg.DirectoryServices.AccountManagement
 
 		#region Methods
 
-		protected internal abstract IEnumerable<TInterface> CastSearchResult(System.DirectoryServices.AccountManagement.PrincipalSearchResult<Principal> concreteSearchResult);
+		public virtual T Create()
+		{
+			return this.Create(false);
+		}
+
+		protected internal virtual T Create(bool allowGeneral)
+		{
+			var abstractPrincipal = (T) this.Wrap(this.CreateConcretePrincipal(allowGeneral));
+
+			var abstractPrincipalInternal = (IPrincipalInternal) abstractPrincipal;
+
+			abstractPrincipalInternal.DisposeContextOnDispose = true;
+
+			return abstractPrincipal;
+		}
+
+		protected internal virtual Principal CreateConcretePrincipal(bool allowGeneral)
+		{
+			Type abstractPrincipalType = typeof(T);
+			Type concretePrincipalType = null;
+
+			if(typeof(IComputerPrincipal).IsAssignableFrom(abstractPrincipalType))
+				concretePrincipalType = typeof(ComputerPrincipal);
+			else if(typeof(IGroupPrincipal).IsAssignableFrom(abstractPrincipalType))
+				concretePrincipalType = typeof(GroupPrincipal);
+			else if(typeof(IUserPrincipal).IsAssignableFrom(abstractPrincipalType))
+				concretePrincipalType = typeof(UserPrincipal);
+
+			if(concretePrincipalType == null && allowGeneral)
+			{
+				if(typeof(IAuthenticablePrincipal).IsAssignableFrom(abstractPrincipalType))
+					concretePrincipalType = typeof(GeneralAuthenticablePrincipal);
+				else if(typeof(IPrincipal).IsAssignableFrom(abstractPrincipalType))
+					concretePrincipalType = typeof(GeneralPrincipal);
+			}
+
+			if(concretePrincipalType == null)
+				throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Could not create a principal of type \"{0}\". The type has no concrete type mapped to it.", abstractPrincipalType));
+
+			Principal concretePrincipal;
+
+			try
+			{
+				concretePrincipal = (Principal) Activator.CreateInstance(concretePrincipalType, new object[] {this.CreateConcretePrincipalContext()});
+			}
+			catch(Exception exception)
+			{
+				throw new TargetInvocationException(string.Format(CultureInfo.InvariantCulture, "A principal of type \"{0}\" could not be created.", concretePrincipalType), exception);
+			}
+
+			return concretePrincipal;
+		}
 
 		protected internal virtual PrincipalContext CreateConcretePrincipalContext()
 		{
-			return new PrincipalContext(ContextType.Machine);
-			//return new PrincipalContext(this.PrincipalContext.ContextType, this.PrincipalContext.Name, this.PrincipalContext.Container, this.PrincipalContext.Options, this.PrincipalContext.UserName, this.PrincipalContext.Password);
+			return this.GetConcretePrincipalContext(this.PrincipalConnection.CreatePrincipalContext(), true);
 		}
 
-		protected internal abstract T CreateConcreteQueryFilter(TQueryFilter queryFilter);
+		protected internal virtual IPrincipalInternal CreateQueryFilter(T queryFilter)
+		{
+			if(Equals(queryFilter, null))
+				throw new ArgumentNullException("queryFilter");
 
-		public virtual void Delete(TInterface principal)
+			var principalQueryFilterInternal = queryFilter as IPrincipalQueryFilterInternal<T>;
+
+			if(principalQueryFilterInternal != null)
+			{
+				var concretePrincipal = this.CreateConcretePrincipal(true);
+
+				var queryFilterInternal = (IPrincipalInternal) this.Wrap(concretePrincipal);
+
+				principalQueryFilterInternal.TransferQueryFilter((T) queryFilterInternal);
+
+				return queryFilterInternal;
+			}
+
+			throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Could not create a query-filter from the type \"{0}\".", queryFilter.GetType()));
+		}
+
+		public virtual void Delete(T principal)
 		{
 			this.GetPrincipal(principal).Delete();
 		}
 
-		public virtual IDisposableEnumerable<TInterface> Find(TQueryFilter queryFilter)
+		public virtual IDisposableEnumerable<T> Find(T queryFilter)
 		{
-			if(queryFilter == null)
+			if(Equals(queryFilter, null))
 				throw new ArgumentNullException("queryFilter");
 
-			using(var concreteQueryFilter = this.CreateConcreteQueryFilter(queryFilter))
+			bool disposeQueryFilter = false;
+			var queryFilterInternal = queryFilter as IPrincipalInternal;
+
+			try
 			{
+				if(queryFilterInternal == null)
+				{
+					queryFilterInternal = this.CreateQueryFilter(queryFilter);
+					disposeQueryFilter = true;
+				}
+
 				using(var principalSearcher = new PrincipalSearcher())
 				{
-					principalSearcher.QueryFilter = concreteQueryFilter;
+					principalSearcher.QueryFilter = queryFilterInternal.BasicPrincipal;
+
+					this.ResolveDirectorySearcherSettingsIfNecessary(principalSearcher, queryFilterInternal.Context);
 
 					using(var searchResult = principalSearcher.FindAll())
 					{
-						return new PrincipalSearchResult<TInterface>(concreteQueryFilter.Context, this.CastSearchResult(searchResult));
+						return new PrincipalSearchResult<T>(searchResult.Select(principal => (T) this.Wrap(principal)), queryFilterInternal.Context, disposeQueryFilter);
 					}
 				}
 			}
+			finally
+			{
+				if(disposeQueryFilter && queryFilterInternal != null)
+					queryFilterInternal.Dispose();
+			}
 		}
 
-		protected internal virtual void PopulateConcreteQueryFilter(T concreteQueryFilter, TQueryFilter queryFilter)
+		protected internal virtual PrincipalContext GetConcretePrincipalContext(IPrincipalContext principalContext)
 		{
-			if(concreteQueryFilter == null)
-				throw new ArgumentNullException("concreteQueryFilter");
-
-			if(queryFilter == null)
-				return;
-
-			concreteQueryFilter.Description = queryFilter.Description;
-			concreteQueryFilter.DisplayName = queryFilter.DisplayName;
-			concreteQueryFilter.Name = queryFilter.Name;
-			concreteQueryFilter.SamAccountName = queryFilter.SamAccountName;
-			concreteQueryFilter.UserPrincipalName = queryFilter.UserPrincipalName;
+			return this.GetConcretePrincipalContext(principalContext, true);
 		}
 
-		protected internal virtual void ResolveDirectorySearcherSettingsIfNecessary(PrincipalSearcher principalSearcher)
+		protected internal virtual PrincipalContext GetConcretePrincipalContext(IPrincipalContext principalContext, bool throwExceptionIfUnsuccessful)
+		{
+			if(principalContext == null)
+				return null;
+
+			var principalContextInternal = principalContext as IPrincipalContextInternal;
+
+			if(principalContextInternal != null)
+				return principalContextInternal.PrincipalContext;
+
+			if(throwExceptionIfUnsuccessful)
+				throw new NotImplementedException(string.Format(CultureInfo.InvariantCulture, "The object of type \"{0}\" does not implement \"{1}\".", principalContext.GetType(), typeof(IPrincipalContextInternal)));
+
+			return null;
+		}
+
+		protected internal virtual void ResolveDirectorySearcherSettingsIfNecessary(PrincipalSearcher principalSearcher, IPrincipalContext principalContext)
 		{
 			if(principalSearcher == null)
 				throw new ArgumentNullException("principalSearcher");
 
-			if(this.PrincipalContext.ContextType == ContextType.Domain && principalSearcher.GetUnderlyingSearcherType() == typeof(DirectorySearcher))
+			if(principalContext == null)
+				throw new ArgumentNullException("principalContext");
+
+			if(principalContext.ContextType == ContextType.Domain && principalSearcher.GetUnderlyingSearcherType() == typeof(DirectorySearcher))
 			{
 				var directorySearcher = (DirectorySearcher) principalSearcher.GetUnderlyingSearcher();
 				//directorySearcher.Sort.PropertyName = this.GetIdentityType().ToString();
@@ -117,7 +221,7 @@ namespace HansKindberg.DirectoryServices.AccountManagement
 			}
 		}
 
-		public virtual void Save(TInterface principal)
+		public virtual void Save(T principal)
 		{
 			this.GetPrincipal(principal).Save();
 		}

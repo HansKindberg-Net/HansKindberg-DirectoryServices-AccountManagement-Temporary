@@ -4,21 +4,11 @@ using System.DirectoryServices.AccountManagement;
 
 namespace HansKindberg.DirectoryServices.AccountManagement
 {
-	[SuppressMessage("Microsoft.Design", "CA1063:ImplementIDisposableCorrectly", Justification = "This is a wrapper.")]
-	public class ComputerPrincipalWrapper : AuthenticablePrincipalWrapper<ComputerPrincipal>, IComputerPrincipal
+	public class ComputerPrincipalWrapper : ComputerPrincipalWrapper<ComputerPrincipal>
 	{
 		#region Constructors
 
 		public ComputerPrincipalWrapper(ComputerPrincipal computerPrincipal) : base(computerPrincipal, "computerPrincipal") {}
-
-		#endregion
-
-		#region Properties
-
-		public virtual IList<string> ServicePrincipalNames
-		{
-			get { return this.Principal.ServicePrincipalNames; }
-		}
 
 		#endregion
 
@@ -37,6 +27,25 @@ namespace HansKindberg.DirectoryServices.AccountManagement
 		public static implicit operator ComputerPrincipalWrapper(ComputerPrincipal computerPrincipal)
 		{
 			return computerPrincipal != null ? new ComputerPrincipalWrapper(computerPrincipal) : null;
+		}
+
+		#endregion
+	}
+
+	[SuppressMessage("Microsoft.Design", "CA1063:ImplementIDisposableCorrectly", Justification = "This is a wrapper.")]
+	public abstract class ComputerPrincipalWrapper<T> : AuthenticablePrincipalWrapper<T>, IComputerPrincipal where T : ComputerPrincipal
+	{
+		#region Constructors
+
+		protected ComputerPrincipalWrapper(T computerPrincipal, string parameterName) : base(computerPrincipal, parameterName) {}
+
+		#endregion
+
+		#region Properties
+
+		public virtual IList<string> ServicePrincipalNames
+		{
+			get { return this.Principal.ServicePrincipalNames; }
 		}
 
 		#endregion

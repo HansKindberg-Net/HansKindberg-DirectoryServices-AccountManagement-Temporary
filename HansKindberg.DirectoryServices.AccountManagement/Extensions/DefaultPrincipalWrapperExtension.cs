@@ -1,6 +1,4 @@
-﻿using System;
-using System.DirectoryServices.AccountManagement;
-using System.Globalization;
+﻿using System.DirectoryServices.AccountManagement;
 
 namespace HansKindberg.DirectoryServices.AccountManagement.Extensions
 {
@@ -14,21 +12,22 @@ namespace HansKindberg.DirectoryServices.AccountManagement.Extensions
 				return null;
 
 			var computerPrincipal = principal as ComputerPrincipal;
-
 			if(computerPrincipal != null)
 				return (ComputerPrincipalWrapper) computerPrincipal;
 
 			var groupPrincipal = principal as GroupPrincipal;
-
 			if(groupPrincipal != null)
 				return (GroupPrincipalWrapper) groupPrincipal;
 
 			var userPrincipal = principal as UserPrincipal;
-
 			if(userPrincipal != null)
 				return (UserPrincipalWrapper) userPrincipal;
 
-			throw new InvalidCastException(string.Format(CultureInfo.InvariantCulture, "The principal is of type \"{0}\". This is not expected behavior.", principal.GetType()));
+			var authenticablePrincipal = principal as AuthenticablePrincipal;
+			if(authenticablePrincipal != null)
+				return (AuthenticablePrincipalWrapper) authenticablePrincipal;
+
+			return (PrincipalWrapper) principal;
 		}
 
 		#endregion

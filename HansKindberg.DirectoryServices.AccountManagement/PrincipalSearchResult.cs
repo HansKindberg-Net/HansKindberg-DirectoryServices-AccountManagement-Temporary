@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.DirectoryServices.AccountManagement;
 using HansKindberg.DirectoryServices.AccountManagement.Collections.Generic;
 
 namespace HansKindberg.DirectoryServices.AccountManagement
@@ -12,21 +11,23 @@ namespace HansKindberg.DirectoryServices.AccountManagement
 	{
 		#region Fields
 
+		private readonly bool _disposePrincipalContextOnDispose;
 		private readonly IEnumerable<T> _items;
-		private readonly PrincipalContext _principalContext;
+		private readonly IPrincipalContext _principalContext;
 
 		#endregion
 
 		#region Constructors
 
-		public PrincipalSearchResult(PrincipalContext principalContext, IEnumerable<T> items)
+		public PrincipalSearchResult(IEnumerable<T> items, IPrincipalContext principalContext, bool disposePrincipalContextOnDispose)
 		{
-			if(principalContext == null)
-				throw new ArgumentNullException("principalContext");
-
 			if(items == null)
 				throw new ArgumentNullException("items");
 
+			if(principalContext == null)
+				throw new ArgumentNullException("principalContext");
+
+			this._disposePrincipalContextOnDispose = disposePrincipalContextOnDispose;
 			this._items = items;
 			this._principalContext = principalContext;
 		}
@@ -35,12 +36,17 @@ namespace HansKindberg.DirectoryServices.AccountManagement
 
 		#region Properties
 
+		protected internal virtual bool DisposePrincipalContextOnDispose
+		{
+			get { return this._disposePrincipalContextOnDispose; }
+		}
+
 		protected internal virtual IEnumerable<T> Items
 		{
 			get { return this._items; }
 		}
 
-		protected internal virtual PrincipalContext PrincipalContext
+		protected internal virtual IPrincipalContext PrincipalContext
 		{
 			get { return this._principalContext; }
 		}
@@ -60,7 +66,8 @@ namespace HansKindberg.DirectoryServices.AccountManagement
 			if(!disposing)
 				return;
 
-			this.PrincipalContext.Dispose();
+			if(this.DisposePrincipalContextOnDispose)
+				this.PrincipalContext.Dispose();
 
 			foreach(var item in this.Items)
 			{

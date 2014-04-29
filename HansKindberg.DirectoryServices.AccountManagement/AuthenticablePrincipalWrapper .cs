@@ -7,6 +7,34 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace HansKindberg.DirectoryServices.AccountManagement
 {
+	public class AuthenticablePrincipalWrapper : AuthenticablePrincipalWrapper<AuthenticablePrincipal>
+	{
+		#region Constructors
+
+		public AuthenticablePrincipalWrapper(AuthenticablePrincipal authenticablePrincipal) : base(authenticablePrincipal, "authenticablePrincipal") {}
+
+		#endregion
+
+		#region Methods
+
+		public static AuthenticablePrincipalWrapper FromAuthenticablePrincipal(AuthenticablePrincipal authenticablePrincipal)
+		{
+			return authenticablePrincipal;
+		}
+
+		#endregion
+
+		#region Implicit operator
+
+		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "Should be disposed by the caller. ")]
+		public static implicit operator AuthenticablePrincipalWrapper(AuthenticablePrincipal authenticablePrincipal)
+		{
+			return authenticablePrincipal != null ? new AuthenticablePrincipalWrapper(authenticablePrincipal) : null;
+		}
+
+		#endregion
+	}
+
 	[SuppressMessage("Microsoft.Design", "CA1063:ImplementIDisposableCorrectly", Justification = "This is a wrapper.")]
 	public abstract class AuthenticablePrincipalWrapper<T> : PrincipalWrapper<T>, IAuthenticablePrincipal where T : AuthenticablePrincipal
 	{
