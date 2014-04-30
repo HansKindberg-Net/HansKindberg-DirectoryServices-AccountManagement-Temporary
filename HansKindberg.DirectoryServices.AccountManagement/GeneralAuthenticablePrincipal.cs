@@ -2,6 +2,8 @@
 
 namespace HansKindberg.DirectoryServices.AccountManagement
 {
+	[DirectoryRdnPrefix("CN")]
+	[DirectoryObjectClass("*)(|(objectClass=computer)(objectClass=user)")]
 	public class GeneralAuthenticablePrincipal : AuthenticablePrincipal
 	{
 		#region Constructors
