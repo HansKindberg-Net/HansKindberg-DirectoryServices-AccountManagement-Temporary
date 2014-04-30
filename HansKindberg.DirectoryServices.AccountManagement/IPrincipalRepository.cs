@@ -13,9 +13,13 @@ namespace HansKindberg.DirectoryServices.AccountManagement
 
 		#region Methods
 
-		void Delete(T principal);
+		TEditablePrincipal Create<TEditablePrincipal>() where TEditablePrincipal : IEditablePrincipal;
+		TEditablePrincipal Create<TEditablePrincipal>(string container) where TEditablePrincipal : IEditablePrincipal;
+		TEditablePrincipal Create<TEditablePrincipal>(IPrincipalContext principalContext) where TEditablePrincipal : IEditablePrincipal;
+		void Delete(IEditablePrincipal principal);
 		IDisposableEnumerable<T> Find(T queryFilter);
-		void Save(T principal);
+		void Save(IEditablePrincipal principal);
+		void Save(IEditablePrincipal principal, IPrincipalContext principalContext);
 
 		#endregion
 	}

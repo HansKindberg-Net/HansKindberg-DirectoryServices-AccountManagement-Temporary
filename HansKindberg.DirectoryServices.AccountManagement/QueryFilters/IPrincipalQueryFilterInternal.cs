@@ -1,10 +1,10 @@
 ﻿namespace HansKindberg.DirectoryServices.AccountManagement.QueryFilters
 {
-	public interface IPrincipalQueryFilterInternal<in T> where T : IPrincipal
+	public interface IPrincipalQueryFilterInternal
 	{
 		#region Methods
 
-		void TransferQueryFilter(T queryFilter);
+		IPrincipal CreateConcreteQueryFilter(IPrincipalContext principalContext);
 
 		#endregion
 	}

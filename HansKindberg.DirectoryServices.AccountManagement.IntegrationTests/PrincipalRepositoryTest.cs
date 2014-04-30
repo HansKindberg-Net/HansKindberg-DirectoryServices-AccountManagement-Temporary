@@ -13,16 +13,30 @@ namespace HansKindberg.DirectoryServices.AccountManagement.IntegrationTests
 	{
 		#region Methods
 
-		[TestMethod]
-		public void Find_IfUsingAAuthenticablePrincipalQueryFilter_ShouldReturnAResultWithComputersAndUsers()
+		private static IPrincipalConnection CreateDefaultDomainPrincipalConnection()
 		{
-			var principalConnection = new PrincipalConnection
+			return new PrincipalConnection
 			{
 				ContextType = ContextType.Domain,
 				Name = "LOCAL"
 			};
+		}
 
-			var principalRepository = new PrincipalRepository(principalConnection);
+		[TestMethod]
+		public void Create_ShouldHandleUserPrincipal()
+		{
+			var principalRepository = new PrincipalRepository(CreateDefaultDomainPrincipalConnection());
+
+			using(var userPrincipal = principalRepository.Create<IUserPrincipal>())
+			{
+				Assert.IsNotNull(userPrincipal);
+			}
+		}
+
+		[TestMethod]
+		public void Find_IfUsingAAuthenticablePrincipalQueryFilter_ShouldReturnAResultWithComputersAndUsers()
+		{
+			var principalRepository = new PrincipalRepository(CreateDefaultDomainPrincipalConnection());
 
 			var structuralObjectClasses = new List<string>();
 			var principalTypes = new List<Type>();
@@ -47,22 +61,15 @@ namespace HansKindberg.DirectoryServices.AccountManagement.IntegrationTests
 			Assert.IsTrue(structuralObjectClasses.Contains("computer"));
 			Assert.IsTrue(structuralObjectClasses.Contains("user"));
 
-			Assert.AreEqual(2, principalTypes.Count);
+			Assert.AreEqual(1, principalTypes.Count);
 
-			Assert.IsTrue(principalTypes.Contains(typeof(ComputerPrincipalWrapper)));
-			Assert.IsTrue(principalTypes.Contains(typeof(UserPrincipalWrapper)));
+			Assert.IsTrue(principalTypes.Contains(typeof(AuthenticablePrincipalWrapper)));
 		}
 
 		[TestMethod]
 		public void Find_IfUsingAPrincipalQueryFilter_ShouldReturnAResultWithComputersAndGroupsAndUsers()
 		{
-			var principalConnection = new PrincipalConnection
-			{
-				ContextType = ContextType.Domain,
-				Name = "LOCAL"
-			};
-
-			var principalRepository = new PrincipalRepository(principalConnection);
+			var principalRepository = new PrincipalRepository(CreateDefaultDomainPrincipalConnection());
 
 			var structuralObjectClasses = new List<string>();
 			var principalTypes = new List<Type>();
@@ -88,11 +95,45 @@ namespace HansKindberg.DirectoryServices.AccountManagement.IntegrationTests
 			Assert.IsTrue(structuralObjectClasses.Contains("group"));
 			Assert.IsTrue(structuralObjectClasses.Contains("user"));
 
-			Assert.AreEqual(3, principalTypes.Count);
+			Assert.AreEqual(1, principalTypes.Count);
 
-			Assert.IsTrue(principalTypes.Contains(typeof(ComputerPrincipalWrapper)));
-			Assert.IsTrue(principalTypes.Contains(typeof(GroupPrincipalWrapper)));
-			Assert.IsTrue(principalTypes.Contains(typeof(UserPrincipalWrapper)));
+			Assert.IsTrue(principalTypes.Contains(typeof(PrincipalWrapper)));
+		}
+
+		[TestMethod]
+		public void Save_ShouldHandleUserPrincipal()
+		{
+			const string userName = "User1000";
+
+			var principalRepository = new PrincipalRepository(CreateDefaultDomainPrincipalConnection());
+
+			using(var userPrincipalQueryFilter = new UserPrincipalQueryFilter())
+			{
+				userPrincipalQueryFilter.SamAccountName = userName;
+
+				using(var foundUserPrincipals = principalRepository.Find(userPrincipalQueryFilter))
+				{
+					if(foundUserPrincipals.Any())
+					{
+						if(foundUserPrincipals.Count() > 1)
+							throw new InvalidOperationException("There should not be duplicates of a user.");
+
+						var userPrincipal = (IUserPrincipal) foundUserPrincipals.ElementAt(0);
+
+						principalRepository.Delete(userPrincipal);
+					}
+				}
+			}
+
+			using(var userPrincipal = principalRepository.Create<IUserPrincipal>())
+			{
+				userPrincipal.Enabled = true;
+				userPrincipal.PasswordNeverExpires = true;
+				userPrincipal.SamAccountName = userName;
+				userPrincipal.SetPassword("P@ssword");
+
+				principalRepository.Save(userPrincipal);
+			}
 		}
 
 		#endregion

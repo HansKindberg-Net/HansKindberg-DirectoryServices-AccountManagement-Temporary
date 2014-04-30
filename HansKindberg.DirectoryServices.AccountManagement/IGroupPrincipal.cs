@@ -4,7 +4,7 @@ using System.DirectoryServices.AccountManagement;
 
 namespace HansKindberg.DirectoryServices.AccountManagement
 {
-	public interface IGroupPrincipal : IPrincipal
+	public interface IGroupPrincipal : IEditablePrincipal
 	{
 		#region Properties
 

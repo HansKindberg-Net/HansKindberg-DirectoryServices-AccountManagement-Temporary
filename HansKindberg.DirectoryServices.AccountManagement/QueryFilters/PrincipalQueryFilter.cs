@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.DirectoryServices.AccountManagement;
 using System.Security.Principal;
+using HansKindberg.DirectoryServices.AccountManagement.Extensions;
 
 namespace HansKindberg.DirectoryServices.AccountManagement.QueryFilters
 {
 	public class PrincipalQueryFilter : PrincipalQueryFilter<IPrincipal> {}
 
-	public abstract class PrincipalQueryFilter<T> : IPrincipal, IPrincipalQueryFilterInternal<T> where T : IPrincipal
+	public abstract class PrincipalQueryFilter<T> : IPrincipal, IPrincipalQueryFilterInternal where T : IPrincipal
 	{
 		#region Fields
 
@@ -125,6 +127,16 @@ namespace HansKindberg.DirectoryServices.AccountManagement.QueryFilters
 
 		#region Methods
 
+		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "Should be disposed by the caller. ")]
+		public virtual IPrincipal CreateConcreteQueryFilter(IPrincipalContext principalContext)
+		{
+			T concreteQueryFilter = (T) (object) (PrincipalWrapper) new GeneralPrincipal(this.GetPrincipalContext(principalContext));
+
+			this.TransferQueryFilter(concreteQueryFilter);
+
+			return concreteQueryFilter;
+		}
+
 		public void Dispose()
 		{
 			this.Dispose(true);
@@ -143,7 +155,7 @@ namespace HansKindberg.DirectoryServices.AccountManagement.QueryFilters
 			return false;
 		}
 
-		public virtual void TransferQueryFilter(T queryFilter)
+		protected internal virtual void TransferQueryFilter(T queryFilter)
 		{
 			if(Equals(queryFilter, null))
 				throw new ArgumentNullException("queryFilter");

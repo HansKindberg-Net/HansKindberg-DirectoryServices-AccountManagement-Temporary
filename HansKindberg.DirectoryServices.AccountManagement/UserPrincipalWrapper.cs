@@ -34,7 +34,7 @@ namespace HansKindberg.DirectoryServices.AccountManagement
 	}
 
 	[SuppressMessage("Microsoft.Design", "CA1063:ImplementIDisposableCorrectly", Justification = "This is a wrapper.")]
-	public abstract class UserPrincipalWrapper<T> : AuthenticablePrincipalWrapper<T>, IUserPrincipal where T : UserPrincipal
+	public abstract class UserPrincipalWrapper<T> : AuthenticablePrincipalWrapper<T>, IEditablePrincipalInternal, IUserPrincipal where T : UserPrincipal
 	{
 		#region Constructors
 

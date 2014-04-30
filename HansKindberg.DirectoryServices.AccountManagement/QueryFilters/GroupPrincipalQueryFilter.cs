@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.DirectoryServices.AccountManagement;
+using HansKindberg.DirectoryServices.AccountManagement.Extensions;
 
 namespace HansKindberg.DirectoryServices.AccountManagement.QueryFilters
 {
@@ -52,6 +53,16 @@ namespace HansKindberg.DirectoryServices.AccountManagement.QueryFilters
 
 		#region Methods
 
+		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "Should be disposed by the caller. ")]
+		public override IPrincipal CreateConcreteQueryFilter(IPrincipalContext principalContext)
+		{
+			T concreteQueryFilter = (T) (object) (GroupPrincipalWrapper) new GroupPrincipal(this.GetPrincipalContext(principalContext));
+
+			this.TransferQueryFilter(concreteQueryFilter);
+
+			return concreteQueryFilter;
+		}
+
 		public virtual IEnumerable<IPrincipal> GetMembers()
 		{
 			return new IPrincipal[0];
@@ -62,7 +73,7 @@ namespace HansKindberg.DirectoryServices.AccountManagement.QueryFilters
 			return new IPrincipal[0];
 		}
 
-		public override void TransferQueryFilter(T queryFilter)
+		protected internal override void TransferQueryFilter(T queryFilter)
 		{
 			base.TransferQueryFilter(queryFilter);
 

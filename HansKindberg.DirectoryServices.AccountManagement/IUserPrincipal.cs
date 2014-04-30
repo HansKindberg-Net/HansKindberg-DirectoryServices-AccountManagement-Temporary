@@ -2,7 +2,7 @@
 
 namespace HansKindberg.DirectoryServices.AccountManagement
 {
-	public interface IUserPrincipal : IAuthenticablePrincipal
+	public interface IUserPrincipal : IAuthenticablePrincipal, IEditablePrincipal
 	{
 		#region Properties
 

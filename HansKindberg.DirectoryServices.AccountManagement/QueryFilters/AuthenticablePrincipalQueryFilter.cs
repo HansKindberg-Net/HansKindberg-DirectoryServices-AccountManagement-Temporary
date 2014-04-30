@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
+using HansKindberg.DirectoryServices.AccountManagement.Extensions;
 
 namespace HansKindberg.DirectoryServices.AccountManagement.QueryFilters
 {
@@ -217,6 +218,17 @@ namespace HansKindberg.DirectoryServices.AccountManagement.QueryFilters
 		#region Methods
 
 		public virtual void ChangePassword(string oldPassword, string newPassword) {}
+
+		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "Should be disposed by the caller. ")]
+		public override IPrincipal CreateConcreteQueryFilter(IPrincipalContext principalContext)
+		{
+			T concreteQueryFilter = (T) (object) (AuthenticablePrincipalWrapper) new GeneralAuthenticablePrincipal(this.GetPrincipalContext(principalContext));
+
+			this.TransferQueryFilter(concreteQueryFilter);
+
+			return concreteQueryFilter;
+		}
+
 		public virtual void ExpirePasswordNow() {}
 
 		public virtual bool IsAccountLockedOut()
@@ -227,7 +239,7 @@ namespace HansKindberg.DirectoryServices.AccountManagement.QueryFilters
 		public virtual void RefreshExpiredPassword() {}
 		public virtual void SetPassword(string newPassword) {}
 
-		public override void TransferQueryFilter(T queryFilter)
+		protected internal override void TransferQueryFilter(T queryFilter)
 		{
 			base.TransferQueryFilter(queryFilter);
 

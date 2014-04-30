@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.DirectoryServices;
 using System.DirectoryServices.AccountManagement;
 using System.Globalization;
@@ -60,87 +61,77 @@ namespace HansKindberg.DirectoryServices.AccountManagement
 
 		#region Methods
 
-		public virtual T Create()
+		public virtual TEditablePrincipal Create<TEditablePrincipal>() where TEditablePrincipal : IEditablePrincipal
 		{
-			return this.Create(false);
+			var principal = this.CreateInternal<TEditablePrincipal>(this.PrincipalConnection.CreatePrincipalContext());
+			principal.DisposeContextOnDispose = true;
+
+			return (TEditablePrincipal) principal;
 		}
 
-		protected internal virtual T Create(bool allowGeneral)
+		public virtual TEditablePrincipal Create<TEditablePrincipal>(string container) where TEditablePrincipal : IEditablePrincipal
 		{
-			var abstractPrincipal = (T) this.Wrap(this.CreateConcretePrincipal(allowGeneral));
-
-			var abstractPrincipalInternal = (IPrincipalInternal) abstractPrincipal;
-
-			abstractPrincipalInternal.DisposeContextOnDispose = true;
-
-			return abstractPrincipal;
-		}
-
-		protected internal virtual Principal CreateConcretePrincipal(bool allowGeneral)
-		{
-			Type abstractPrincipalType = typeof(T);
-			Type concretePrincipalType = null;
-
-			if(typeof(IComputerPrincipal).IsAssignableFrom(abstractPrincipalType))
-				concretePrincipalType = typeof(ComputerPrincipal);
-			else if(typeof(IGroupPrincipal).IsAssignableFrom(abstractPrincipalType))
-				concretePrincipalType = typeof(GroupPrincipal);
-			else if(typeof(IUserPrincipal).IsAssignableFrom(abstractPrincipalType))
-				concretePrincipalType = typeof(UserPrincipal);
-
-			if(concretePrincipalType == null && allowGeneral)
+			var principalConnectionCopy = new PrincipalConnection
 			{
-				if(typeof(IAuthenticablePrincipal).IsAssignableFrom(abstractPrincipalType))
-					concretePrincipalType = typeof(GeneralAuthenticablePrincipal);
-				else if(typeof(IPrincipal).IsAssignableFrom(abstractPrincipalType))
-					concretePrincipalType = typeof(GeneralPrincipal);
-			}
+				Container = container,
+				ContextType = this.PrincipalConnection.ContextType,
+				Name = this.PrincipalConnection.Name,
+				Options = this.PrincipalConnection.Options,
+				Password = this.PrincipalConnection.Password,
+				UserName = this.PrincipalConnection.UserName,
+			};
 
-			if(concretePrincipalType == null)
-				throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Could not create a principal of type \"{0}\". The type has no concrete type mapped to it.", abstractPrincipalType));
+			var principal = this.CreateInternal<TEditablePrincipal>(principalConnectionCopy.CreatePrincipalContext());
+			principal.DisposeContextOnDispose = true;
 
-			Principal concretePrincipal;
+			return (TEditablePrincipal) principal;
+		}
+
+		public virtual TEditablePrincipal Create<TEditablePrincipal>(IPrincipalContext principalContext) where TEditablePrincipal : IEditablePrincipal
+		{
+			var principal = this.CreateInternal<TEditablePrincipal>(principalContext);
+
+			return (TEditablePrincipal) principal;
+		}
+
+		[SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+		protected internal virtual IEditablePrincipalInternal CreateInternal<TEditablePrincipal>(IPrincipalContext principalContext) where TEditablePrincipal : IEditablePrincipal
+		{
+			var principalTypeToCreate = this.GetConcretePrincipalTypeToCreate<TEditablePrincipal>();
+
+			if(principalTypeToCreate == null)
+				throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "An object of type \"{0}\" can not be created. The type is not mapped to any concrete type.", typeof(TEditablePrincipal)));
+
+			Principal principal;
 
 			try
 			{
-				concretePrincipal = (Principal) Activator.CreateInstance(concretePrincipalType, new object[] {this.CreateConcretePrincipalContext()});
+				principal = (Principal) Activator.CreateInstance(principalTypeToCreate, new object[] {this.GetPrincipalContext(principalContext)});
 			}
 			catch(Exception exception)
 			{
-				throw new TargetInvocationException(string.Format(CultureInfo.InvariantCulture, "A principal of type \"{0}\" could not be created.", concretePrincipalType), exception);
+				throw new TargetInvocationException(string.Format(CultureInfo.InvariantCulture, "A principal of type \"{0}\" could not be created.", principalTypeToCreate), exception);
 			}
 
-			return concretePrincipal;
-		}
+			IEditablePrincipalInternal editablePrincipal;
 
-		protected internal virtual PrincipalContext CreateConcretePrincipalContext()
-		{
-			return this.GetConcretePrincipalContext(this.PrincipalConnection.CreatePrincipalContext(), true);
-		}
-
-		protected internal virtual IPrincipalInternal CreateQueryFilter(T queryFilter)
-		{
-			if(Equals(queryFilter, null))
-				throw new ArgumentNullException("queryFilter");
-
-			var principalQueryFilterInternal = queryFilter as IPrincipalQueryFilterInternal<T>;
-
-			if(principalQueryFilterInternal != null)
+			try
 			{
-				var concretePrincipal = this.CreateConcretePrincipal(true);
-
-				var queryFilterInternal = (IPrincipalInternal) this.Wrap(concretePrincipal);
-
-				principalQueryFilterInternal.TransferQueryFilter((T) queryFilterInternal);
-
-				return queryFilterInternal;
+				editablePrincipal = (IEditablePrincipalInternal) this.Wrap(principal);
+			}
+			catch(Exception exception)
+			{
+				throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "The principal of type \"{0}\" could not be wrapped.", principalTypeToCreate), exception);
 			}
 
-			throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Could not create a query-filter from the type \"{0}\".", queryFilter.GetType()));
+			return editablePrincipal;
 		}
 
-		public virtual void Delete(T principal)
+		public virtual void Delete(IEditablePrincipal principal)
 		{
+			if(principal == null)
+				throw new ArgumentNullException("principal");
+
 			this.GetPrincipal(principal).Delete();
 		}
 
@@ -149,53 +140,57 @@ namespace HansKindberg.DirectoryServices.AccountManagement
 			if(Equals(queryFilter, null))
 				throw new ArgumentNullException("queryFilter");
 
-			bool disposeQueryFilter = false;
-			var queryFilterInternal = queryFilter as IPrincipalInternal;
+			var concreteQueryFilter = queryFilter as IPrincipalInternal;
+			bool disposeConcreteQueryFilter = concreteQueryFilter == null;
 
 			try
 			{
-				if(queryFilterInternal == null)
+				if(concreteQueryFilter == null)
 				{
-					queryFilterInternal = this.CreateQueryFilter(queryFilter);
-					disposeQueryFilter = true;
+					var queryFilterInternal = queryFilter as IPrincipalQueryFilterInternal;
+
+					if(queryFilterInternal == null)
+						throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "In the current implementation the query-filter must be of type \"{0}\" or \"{1}\".", typeof(IPrincipalInternal), typeof(IPrincipalQueryFilterInternal)));
+
+					concreteQueryFilter = (IPrincipalInternal) queryFilterInternal.CreateConcreteQueryFilter(this.PrincipalConnection.CreatePrincipalContext());
 				}
 
 				using(var principalSearcher = new PrincipalSearcher())
 				{
-					principalSearcher.QueryFilter = queryFilterInternal.BasicPrincipal;
+					principalSearcher.QueryFilter = concreteQueryFilter.BasicPrincipal;
 
-					this.ResolveDirectorySearcherSettingsIfNecessary(principalSearcher, queryFilterInternal.Context);
+					this.ResolveDirectorySearcherSettingsIfNecessary(principalSearcher, concreteQueryFilter.Context);
 
 					using(var searchResult = principalSearcher.FindAll())
 					{
-						return new PrincipalSearchResult<T>(searchResult.Select(principal => (T) this.Wrap(principal)), queryFilterInternal.Context, disposeQueryFilter);
+						return new PrincipalSearchResult<T>(searchResult.Select(principal => (T) this.Wrap(principal)), concreteQueryFilter.Context, disposeConcreteQueryFilter);
 					}
 				}
 			}
+			catch(Exception exception)
+			{
+				throw new InvalidOperationException("Could not execute the search.", exception);
+			}
 			finally
 			{
-				if(disposeQueryFilter && queryFilterInternal != null)
-					queryFilterInternal.Dispose();
+				if(disposeConcreteQueryFilter && concreteQueryFilter != null)
+					concreteQueryFilter.Dispose();
 			}
 		}
 
-		protected internal virtual PrincipalContext GetConcretePrincipalContext(IPrincipalContext principalContext)
+		[SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+		protected internal virtual Type GetConcretePrincipalTypeToCreate<TEditablePrincipal>() where TEditablePrincipal : IEditablePrincipal
 		{
-			return this.GetConcretePrincipalContext(principalContext, true);
-		}
+			var editablePrincipalType = typeof(TEditablePrincipal);
 
-		protected internal virtual PrincipalContext GetConcretePrincipalContext(IPrincipalContext principalContext, bool throwExceptionIfUnsuccessful)
-		{
-			if(principalContext == null)
-				return null;
+			if(typeof(IComputerPrincipal).IsAssignableFrom(editablePrincipalType))
+				return typeof(ComputerPrincipal);
 
-			var principalContextInternal = principalContext as IPrincipalContextInternal;
+			if(typeof(IGroupPrincipal).IsAssignableFrom(editablePrincipalType))
+				return typeof(GroupPrincipal);
 
-			if(principalContextInternal != null)
-				return principalContextInternal.PrincipalContext;
-
-			if(throwExceptionIfUnsuccessful)
-				throw new NotImplementedException(string.Format(CultureInfo.InvariantCulture, "The object of type \"{0}\" does not implement \"{1}\".", principalContext.GetType(), typeof(IPrincipalContextInternal)));
+			if(typeof(IUserPrincipal).IsAssignableFrom(editablePrincipalType))
+				return typeof(UserPrincipal);
 
 			return null;
 		}
@@ -221,9 +216,23 @@ namespace HansKindberg.DirectoryServices.AccountManagement
 			}
 		}
 
-		public virtual void Save(T principal)
+		public virtual void Save(IEditablePrincipal principal)
 		{
+			if(principal == null)
+				throw new ArgumentNullException("principal");
+
 			this.GetPrincipal(principal).Save();
+		}
+
+		public virtual void Save(IEditablePrincipal principal, IPrincipalContext principalContext)
+		{
+			if(principal == null)
+				throw new ArgumentNullException("principal");
+
+			if(principalContext == null)
+				throw new ArgumentNullException("principalContext");
+
+			this.GetPrincipal(principal).Save(this.GetPrincipalContext(principalContext));
 		}
 
 		#endregion

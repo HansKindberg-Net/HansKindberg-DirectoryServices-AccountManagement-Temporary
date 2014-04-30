@@ -48,13 +48,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AdvancedFiltersWrapper.cs" />
+    <Compile Include="Extensions\DefaultPrincipalContextExtension.cs" />
+    <Compile Include="Extensions\IPrincipalContextExtension.cs" />
+    <Compile Include="Extensions\PrincipalContextExtension.cs" />
     <Compile Include="GeneralAuthenticablePrincipal.cs" />
     <Compile Include="GeneralPrincipal.cs" />
     <Compile Include="Connections\IPrincipalConnection.cs" />
     <Compile Include="Extensions\DefaultPrincipalWrapperExtension.cs" />
     <Compile Include="Extensions\IPrincipalWrapperExtension.cs" />
     <Compile Include="Extensions\PrincipalWrapperExtension.cs" />
+    <Compile Include="IEditablePrincipal.cs" />
     <Compile Include="IPrincipalContextInternal.cs" />
+    <Compile Include="IEditablePrincipalInternal.cs" />
     <Compile Include="IPrincipalRepository.cs" />
     <Compile Include="PrincipalCollectionEnumeratorWrapper.cs" />
     <Compile Include="PrincipalCollectionWrapper.cs" />
