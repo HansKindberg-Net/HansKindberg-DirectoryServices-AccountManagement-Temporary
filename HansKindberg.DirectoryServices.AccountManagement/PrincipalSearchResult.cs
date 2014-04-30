@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using HansKindberg.DirectoryServices.AccountManagement.Collections.Generic;
 
 namespace HansKindberg.DirectoryServices.AccountManagement
@@ -28,7 +29,7 @@ namespace HansKindberg.DirectoryServices.AccountManagement
 				throw new ArgumentNullException("principalContext");
 
 			this._disposePrincipalContextOnDispose = disposePrincipalContextOnDispose;
-			this._items = items;
+			this._items = items.ToArray(); // To avoid having problems with PrincipalSearchResult already being disposed.
 			this._principalContext = principalContext;
 		}
 
