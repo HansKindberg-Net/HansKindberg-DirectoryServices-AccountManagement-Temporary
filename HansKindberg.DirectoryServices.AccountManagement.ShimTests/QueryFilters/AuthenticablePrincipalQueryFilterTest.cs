@@ -91,6 +91,14 @@ namespace HansKindberg.DirectoryServices.AccountManagement.ShimTests.QueryFilter
 							Assert.IsTrue(homeDirectorySetIsCalled);
 							Assert.IsFalse(homeDriveSetIsCalled);
 							Assert.IsFalse(nameSetIsCalled);
+
+							Assert.IsNull(concreteQueryFilter.AccountExpirationDate);
+							Assert.IsNull(concreteQueryFilter.AccountLockoutTime);
+							Assert.AreEqual(descriptionFilter, concreteQueryFilter.Description);
+							Assert.AreEqual(enabledFilter, concreteQueryFilter.Enabled);
+							Assert.AreEqual(homeDirectoryFilter, concreteQueryFilter.HomeDirectory);
+							Assert.IsNull(concreteQueryFilter.HomeDrive);
+							Assert.IsNull(concreteQueryFilter.Name);
 						}
 					}
 				}
