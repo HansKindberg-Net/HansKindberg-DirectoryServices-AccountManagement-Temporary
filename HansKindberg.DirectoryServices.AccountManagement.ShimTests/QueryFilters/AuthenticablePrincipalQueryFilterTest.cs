@@ -65,9 +65,7 @@ namespace HansKindberg.DirectoryServices.AccountManagement.ShimTests.QueryFilter
 				{
 					authenticablePrincipalQueryFilter.AdvancedSearchFilter.AccountExpirationDate(accountExpirationDateFilter, accountExpirationDateFilterMatchType);
 					authenticablePrincipalQueryFilter.Description = descriptionFilter;
-					// ReSharper disable ConditionIsAlwaysTrueOrFalse
 					authenticablePrincipalQueryFilter.Enabled = enabledFilter;
-					// ReSharper restore ConditionIsAlwaysTrueOrFalse
 					authenticablePrincipalQueryFilter.HomeDirectory = homeDirectoryFilter;
 
 					using(var concretePrincipalContext = new PrincipalContext(ContextType.Machine))
@@ -82,7 +80,7 @@ namespace HansKindberg.DirectoryServices.AccountManagement.ShimTests.QueryFilter
 							Assert.IsFalse(homeDriveSetIsCalled);
 							Assert.IsFalse(nameSetIsCalled);
 
-							var concreteQueryFilter = (IAuthenticablePrincipal) authenticablePrincipalQueryFilter.CreateConcreteQueryFilter(principalContext);
+							authenticablePrincipalQueryFilter.CreateConcreteQueryFilter(principalContext);
 
 							Assert.IsTrue(advancedSearchFilterAccountExpirationDateIsCalled);
 							Assert.IsFalse(advancedSearchFilterAccountLockoutTimeIsCalled);
@@ -91,14 +89,6 @@ namespace HansKindberg.DirectoryServices.AccountManagement.ShimTests.QueryFilter
 							Assert.IsTrue(homeDirectorySetIsCalled);
 							Assert.IsFalse(homeDriveSetIsCalled);
 							Assert.IsFalse(nameSetIsCalled);
-
-							Assert.IsNull(concreteQueryFilter.AccountExpirationDate);
-							Assert.IsNull(concreteQueryFilter.AccountLockoutTime);
-							Assert.AreEqual(descriptionFilter, concreteQueryFilter.Description);
-							Assert.AreEqual(enabledFilter, concreteQueryFilter.Enabled);
-							Assert.AreEqual(homeDirectoryFilter, concreteQueryFilter.HomeDirectory);
-							Assert.IsNull(concreteQueryFilter.HomeDrive);
-							Assert.IsNull(concreteQueryFilter.Name);
 						}
 					}
 				}
