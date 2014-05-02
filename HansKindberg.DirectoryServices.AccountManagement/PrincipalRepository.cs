@@ -157,7 +157,7 @@ namespace HansKindberg.DirectoryServices.AccountManagement
 
 				using(var principalSearcher = new PrincipalSearcher())
 				{
-					principalSearcher.QueryFilter = concreteQueryFilter.BasicPrincipal;
+					principalSearcher.QueryFilter = concreteQueryFilter.Principal;
 
 					this.ResolveDirectorySearcherSettingsIfNecessary(principalSearcher, concreteQueryFilter.Context);
 

@@ -63,22 +63,6 @@ namespace HansKindberg.DirectoryServices.AccountManagement.Extensions
 			return Instance.GetPrincipal(principal, throwExceptionIfUnsuccessful);
 		}
 
-		public static T GetPrincipal<T>(this object value, IPrincipal principal) where T : Principal
-		{
-			if(value == null)
-				throw new ArgumentNullException("value");
-
-			return Instance.GetPrincipal<T>(principal);
-		}
-
-		public static T GetPrincipal<T>(this object value, IPrincipal principal, bool throwExceptionIfUnsuccessful) where T : Principal
-		{
-			if(value == null)
-				throw new ArgumentNullException("value");
-
-			return Instance.GetPrincipal<T>(principal, throwExceptionIfUnsuccessful);
-		}
-
 		#endregion
 	}
 }

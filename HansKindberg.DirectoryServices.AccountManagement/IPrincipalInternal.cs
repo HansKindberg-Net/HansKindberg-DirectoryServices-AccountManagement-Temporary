@@ -6,17 +6,8 @@ namespace HansKindberg.DirectoryServices.AccountManagement
 	{
 		#region Properties
 
-		Principal BasicPrincipal { get; }
 		bool DisposeContextOnDispose { get; set; }
-
-		#endregion
-	}
-
-	public interface IPrincipalInternal<out T> : IPrincipalInternal where T : Principal
-	{
-		#region Properties
-
-		T Principal { get; }
+		Principal Principal { get; }
 
 		#endregion
 	}

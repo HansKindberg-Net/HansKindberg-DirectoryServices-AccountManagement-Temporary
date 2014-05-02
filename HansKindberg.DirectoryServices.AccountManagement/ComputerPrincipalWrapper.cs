@@ -45,7 +45,7 @@ namespace HansKindberg.DirectoryServices.AccountManagement
 
 		public virtual IList<string> ServicePrincipalNames
 		{
-			get { return this.Principal.ServicePrincipalNames; }
+			get { return this.TypedPrincipal.ServicePrincipalNames; }
 		}
 
 		#endregion

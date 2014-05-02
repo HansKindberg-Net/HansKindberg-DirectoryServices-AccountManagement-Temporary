@@ -48,7 +48,7 @@ namespace HansKindberg.DirectoryServices.AccountManagement
 		{
 			get
 			{
-				using(var authorizationGroups = this.Principal.GetAuthorizationGroups())
+				using(var authorizationGroups = this.TypedPrincipal.GetAuthorizationGroups())
 				{
 					return authorizationGroups.Cast<GroupPrincipal>().Select(groupPrincipal => (IGroupPrincipal) (GroupPrincipalWrapper) groupPrincipal);
 				}
@@ -57,38 +57,38 @@ namespace HansKindberg.DirectoryServices.AccountManagement
 
 		public virtual string EmailAddress
 		{
-			get { return this.Principal.EmailAddress; }
-			set { this.Principal.EmailAddress = value; }
+			get { return this.TypedPrincipal.EmailAddress; }
+			set { this.TypedPrincipal.EmailAddress = value; }
 		}
 
 		public virtual string EmployeeId
 		{
-			get { return this.Principal.EmployeeId; }
-			set { this.Principal.EmployeeId = value; }
+			get { return this.TypedPrincipal.EmployeeId; }
+			set { this.TypedPrincipal.EmployeeId = value; }
 		}
 
 		public virtual string GivenName
 		{
-			get { return this.Principal.GivenName; }
-			set { this.Principal.GivenName = value; }
+			get { return this.TypedPrincipal.GivenName; }
+			set { this.TypedPrincipal.GivenName = value; }
 		}
 
 		public virtual string MiddleName
 		{
-			get { return this.Principal.MiddleName; }
-			set { this.Principal.MiddleName = value; }
+			get { return this.TypedPrincipal.MiddleName; }
+			set { this.TypedPrincipal.MiddleName = value; }
 		}
 
 		public virtual string Surname
 		{
-			get { return this.Principal.Surname; }
-			set { this.Principal.Surname = value; }
+			get { return this.TypedPrincipal.Surname; }
+			set { this.TypedPrincipal.Surname = value; }
 		}
 
 		public virtual string VoiceTelephoneNumber
 		{
-			get { return this.Principal.VoiceTelephoneNumber; }
-			set { this.Principal.VoiceTelephoneNumber = value; }
+			get { return this.TypedPrincipal.VoiceTelephoneNumber; }
+			set { this.TypedPrincipal.VoiceTelephoneNumber = value; }
 		}
 
 		#endregion

@@ -47,19 +47,19 @@ namespace HansKindberg.DirectoryServices.AccountManagement
 
 		public virtual GroupScope? GroupScope
 		{
-			get { return this.Principal.GroupScope; }
-			set { this.Principal.GroupScope = value; }
+			get { return this.TypedPrincipal.GroupScope; }
+			set { this.TypedPrincipal.GroupScope = value; }
 		}
 
 		public virtual bool? IsSecurityGroup
 		{
-			get { return this.Principal.IsSecurityGroup; }
-			set { this.Principal.IsSecurityGroup = value; }
+			get { return this.TypedPrincipal.IsSecurityGroup; }
+			set { this.TypedPrincipal.IsSecurityGroup = value; }
 		}
 
 		public virtual ICollection<IPrincipal> Members
 		{
-			get { return (PrincipalCollectionWrapper) this.Principal.Members; }
+			get { return (PrincipalCollectionWrapper) this.TypedPrincipal.Members; }
 		}
 
 		#endregion
@@ -68,7 +68,7 @@ namespace HansKindberg.DirectoryServices.AccountManagement
 
 		public virtual IEnumerable<IPrincipal> GetMembers()
 		{
-			using(var members = this.Principal.GetMembers())
+			using(var members = this.TypedPrincipal.GetMembers())
 			{
 				return members.Select(this.Wrap);
 			}
@@ -76,7 +76,7 @@ namespace HansKindberg.DirectoryServices.AccountManagement
 
 		public virtual IEnumerable<IPrincipal> GetMembers(bool recursive)
 		{
-			using(var members = this.Principal.GetMembers(recursive))
+			using(var members = this.TypedPrincipal.GetMembers(recursive))
 			{
 				return members.Select(this.Wrap);
 			}

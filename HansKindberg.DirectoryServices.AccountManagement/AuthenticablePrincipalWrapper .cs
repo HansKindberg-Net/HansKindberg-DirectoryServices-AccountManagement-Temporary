@@ -40,7 +40,7 @@ namespace HansKindberg.DirectoryServices.AccountManagement
 	{
 		#region Constructors
 
-		protected AuthenticablePrincipalWrapper(T principal, string parameterName) : base(principal, parameterName) {}
+		protected AuthenticablePrincipalWrapper(T authenticablePrincipal, string parameterName) : base(authenticablePrincipal, parameterName) {}
 
 		#endregion
 
@@ -48,114 +48,114 @@ namespace HansKindberg.DirectoryServices.AccountManagement
 
 		public virtual DateTime? AccountExpirationDate
 		{
-			get { return this.Principal.AccountExpirationDate; }
-			set { this.Principal.AccountExpirationDate = value; }
+			get { return this.TypedPrincipal.AccountExpirationDate; }
+			set { this.TypedPrincipal.AccountExpirationDate = value; }
 		}
 
 		public virtual DateTime? AccountLockoutTime
 		{
-			get { return this.Principal.AccountLockoutTime; }
+			get { return this.TypedPrincipal.AccountLockoutTime; }
 		}
 
 		public virtual IAdvancedFilters AdvancedSearchFilter
 		{
-			get { return (AdvancedFiltersWrapper) this.Principal.AdvancedSearchFilter; }
+			get { return (AdvancedFiltersWrapper) this.TypedPrincipal.AdvancedSearchFilter; }
 		}
 
 		public virtual bool AllowReversiblePasswordEncryption
 		{
-			get { return this.Principal.AllowReversiblePasswordEncryption; }
-			set { this.Principal.AllowReversiblePasswordEncryption = value; }
+			get { return this.TypedPrincipal.AllowReversiblePasswordEncryption; }
+			set { this.TypedPrincipal.AllowReversiblePasswordEncryption = value; }
 		}
 
 		public virtual int BadLogOnCount
 		{
-			get { return this.Principal.BadLogonCount; }
+			get { return this.TypedPrincipal.BadLogonCount; }
 		}
 
 		public virtual IEnumerable<X509Certificate2> Certificates
 		{
-			get { return this.Principal.Certificates.Cast<X509Certificate2>(); }
+			get { return this.TypedPrincipal.Certificates.Cast<X509Certificate2>(); }
 		}
 
 		public virtual bool DelegationPermitted
 		{
-			get { return this.Principal.DelegationPermitted; }
-			set { this.Principal.DelegationPermitted = value; }
+			get { return this.TypedPrincipal.DelegationPermitted; }
+			set { this.TypedPrincipal.DelegationPermitted = value; }
 		}
 
 		public virtual bool? Enabled
 		{
-			get { return this.Principal.Enabled; }
-			set { this.Principal.Enabled = value; }
+			get { return this.TypedPrincipal.Enabled; }
+			set { this.TypedPrincipal.Enabled = value; }
 		}
 
 		public virtual string HomeDirectory
 		{
-			get { return this.Principal.HomeDirectory; }
-			set { this.Principal.HomeDirectory = value; }
+			get { return this.TypedPrincipal.HomeDirectory; }
+			set { this.TypedPrincipal.HomeDirectory = value; }
 		}
 
 		public virtual string HomeDrive
 		{
-			get { return this.Principal.HomeDrive; }
-			set { this.Principal.HomeDrive = value; }
+			get { return this.TypedPrincipal.HomeDrive; }
+			set { this.TypedPrincipal.HomeDrive = value; }
 		}
 
 		public virtual DateTime? LastBadPasswordAttempt
 		{
-			get { return this.Principal.LastBadPasswordAttempt; }
+			get { return this.TypedPrincipal.LastBadPasswordAttempt; }
 		}
 
 		public virtual DateTime? LastLogOn
 		{
-			get { return this.Principal.LastLogon; }
+			get { return this.TypedPrincipal.LastLogon; }
 		}
 
 		public virtual DateTime? LastPasswordSet
 		{
-			get { return this.Principal.LastPasswordSet; }
+			get { return this.TypedPrincipal.LastPasswordSet; }
 		}
 
 		public virtual bool PasswordNeverExpires
 		{
-			get { return this.Principal.PasswordNeverExpires; }
-			set { this.Principal.PasswordNeverExpires = value; }
+			get { return this.TypedPrincipal.PasswordNeverExpires; }
+			set { this.TypedPrincipal.PasswordNeverExpires = value; }
 		}
 
 		public virtual bool PasswordNotRequired
 		{
-			get { return this.Principal.PasswordNotRequired; }
-			set { this.Principal.PasswordNotRequired = value; }
+			get { return this.TypedPrincipal.PasswordNotRequired; }
+			set { this.TypedPrincipal.PasswordNotRequired = value; }
 		}
 
 		public virtual IEnumerable<byte> PermittedLogOnTimes
 		{
-			get { return this.Principal.PermittedLogonTimes; }
-			set { this.Principal.PermittedLogonTimes = value != null ? value.ToArray() : null; }
+			get { return this.TypedPrincipal.PermittedLogonTimes; }
+			set { this.TypedPrincipal.PermittedLogonTimes = value != null ? value.ToArray() : null; }
 		}
 
 		public virtual IList<string> PermittedWorkstations
 		{
-			get { return this.Principal.PermittedWorkstations; }
+			get { return this.TypedPrincipal.PermittedWorkstations; }
 		}
 
 		public virtual string ScriptPath
 		{
-			get { return this.Principal.ScriptPath; }
-			set { this.Principal.ScriptPath = value; }
+			get { return this.TypedPrincipal.ScriptPath; }
+			set { this.TypedPrincipal.ScriptPath = value; }
 		}
 
 		public virtual bool SmartcardLogOnRequired
 		{
-			get { return this.Principal.SmartcardLogonRequired; }
-			set { this.Principal.SmartcardLogonRequired = value; }
+			get { return this.TypedPrincipal.SmartcardLogonRequired; }
+			set { this.TypedPrincipal.SmartcardLogonRequired = value; }
 		}
 
 		public virtual bool UserCannotChangePassword
 		{
-			get { return this.Principal.UserCannotChangePassword; }
-			set { this.Principal.UserCannotChangePassword = value; }
+			get { return this.TypedPrincipal.UserCannotChangePassword; }
+			set { this.TypedPrincipal.UserCannotChangePassword = value; }
 		}
 
 		#endregion
@@ -164,32 +164,32 @@ namespace HansKindberg.DirectoryServices.AccountManagement
 
 		public virtual void ChangePassword(string oldPassword, string newPassword)
 		{
-			this.Principal.ChangePassword(oldPassword, newPassword);
+			this.TypedPrincipal.ChangePassword(oldPassword, newPassword);
 		}
 
 		public virtual void ExpirePasswordNow()
 		{
-			this.Principal.ExpirePasswordNow();
+			this.TypedPrincipal.ExpirePasswordNow();
 		}
 
 		public virtual bool IsAccountLockedOut()
 		{
-			return this.Principal.IsAccountLockedOut();
+			return this.TypedPrincipal.IsAccountLockedOut();
 		}
 
 		public virtual void RefreshExpiredPassword()
 		{
-			this.Principal.RefreshExpiredPassword();
+			this.TypedPrincipal.RefreshExpiredPassword();
 		}
 
 		public virtual void SetPassword(string newPassword)
 		{
-			this.Principal.SetPassword(newPassword);
+			this.TypedPrincipal.SetPassword(newPassword);
 		}
 
 		public virtual void UnlockAccount()
 		{
-			this.Principal.UnlockAccount();
+			this.TypedPrincipal.UnlockAccount();
 		}
 
 		#endregion

@@ -37,11 +37,11 @@ namespace HansKindberg.DirectoryServices.AccountManagement
 	}
 
 	[SuppressMessage("Microsoft.Design", "CA1063:ImplementIDisposableCorrectly", Justification = "This is a wrapper.")]
-	public abstract class PrincipalWrapper<T> : IPrincipalInternal<T> where T : Principal
+	public abstract class PrincipalWrapper<T> : IPrincipalInternal where T : Principal
 	{
 		#region Fields
 
-		private readonly T _principal;
+		private readonly T _typedPrincipal;
 
 		#endregion
 
@@ -52,52 +52,47 @@ namespace HansKindberg.DirectoryServices.AccountManagement
 			if(principal == null)
 				throw new ArgumentNullException(parameterName ?? string.Empty);
 
-			this._principal = principal;
+			this._typedPrincipal = principal;
 		}
 
 		#endregion
 
 		#region Properties
 
-		public virtual Principal BasicPrincipal
-		{
-			get { return this.Principal; }
-		}
-
 		public virtual IPrincipalContext Context
 		{
-			get { return (PrincipalContextWrapper) this.Principal.Context; }
+			get { return (PrincipalContextWrapper) this.TypedPrincipal.Context; }
 		}
 
 		public virtual ContextType ContextType
 		{
-			get { return this.Principal.ContextType; }
+			get { return this.TypedPrincipal.ContextType; }
 		}
 
 		public virtual string Description
 		{
-			get { return this.Principal.Description; }
-			set { this.Principal.Description = value; }
+			get { return this.TypedPrincipal.Description; }
+			set { this.TypedPrincipal.Description = value; }
 		}
 
 		public virtual string DisplayName
 		{
-			get { return this.Principal.DisplayName; }
-			set { this.Principal.DisplayName = value; }
+			get { return this.TypedPrincipal.DisplayName; }
+			set { this.TypedPrincipal.DisplayName = value; }
 		}
 
 		public virtual bool DisposeContextOnDispose { get; set; }
 
 		public virtual string DistinguishedName
 		{
-			get { return this.Principal.DistinguishedName; }
+			get { return this.TypedPrincipal.DistinguishedName; }
 		}
 
 		public virtual IEnumerable<IGroupPrincipal> Groups
 		{
 			get
 			{
-				using(var groups = this.Principal.GetGroups())
+				using(var groups = this.TypedPrincipal.GetGroups())
 				{
 					return groups.Cast<GroupPrincipal>().Select(groupPrincipal => (IGroupPrincipal) (GroupPrincipalWrapper) groupPrincipal);
 				}
@@ -106,50 +101,55 @@ namespace HansKindberg.DirectoryServices.AccountManagement
 
 		public virtual Guid? Guid
 		{
-			get { return this.Principal.Guid; }
+			get { return this.TypedPrincipal.Guid; }
 		}
 
 		public virtual string Name
 		{
-			get { return this.Principal.Name; }
-			set { this.Principal.Name = value; }
+			get { return this.TypedPrincipal.Name; }
+			set { this.TypedPrincipal.Name = value; }
 		}
 
-		public virtual T Principal
+		public virtual Principal Principal
 		{
-			get { return this._principal; }
+			get { return this.TypedPrincipal; }
 		}
 
 		public virtual string SamAccountName
 		{
-			get { return this.Principal.SamAccountName; }
-			set { this.Principal.SamAccountName = value; }
+			get { return this.TypedPrincipal.SamAccountName; }
+			set { this.TypedPrincipal.SamAccountName = value; }
 		}
 
 		public virtual SecurityIdentifier Sid
 		{
-			get { return this.Principal.Sid; }
+			get { return this.TypedPrincipal.Sid; }
 		}
 
 		public virtual string StructuralObjectClass
 		{
-			get { return this.Principal.StructuralObjectClass; }
+			get { return this.TypedPrincipal.StructuralObjectClass; }
+		}
+
+		public virtual T TypedPrincipal
+		{
+			get { return this._typedPrincipal; }
 		}
 
 		public virtual object UnderlyingObject
 		{
-			get { return this.Principal.GetUnderlyingObject(); }
+			get { return this.TypedPrincipal.GetUnderlyingObject(); }
 		}
 
 		public virtual Type UnderlyingObjectType
 		{
-			get { return this.Principal.GetUnderlyingObjectType(); }
+			get { return this.TypedPrincipal.GetUnderlyingObjectType(); }
 		}
 
 		public virtual string UserPrincipalName
 		{
-			get { return this.Principal.UserPrincipalName; }
-			set { this.Principal.UserPrincipalName = value; }
+			get { return this.TypedPrincipal.UserPrincipalName; }
+			set { this.TypedPrincipal.UserPrincipalName = value; }
 		}
 
 		#endregion
@@ -161,9 +161,9 @@ namespace HansKindberg.DirectoryServices.AccountManagement
 		public virtual void Dispose()
 		{
 			if(this.DisposeContextOnDispose)
-				this.Principal.Context.Dispose();
+				this.TypedPrincipal.Context.Dispose();
 
-			this.Principal.Dispose();
+			this.TypedPrincipal.Dispose();
 		}
 
 		public override bool Equals(object obj)
@@ -177,24 +177,24 @@ namespace HansKindberg.DirectoryServices.AccountManagement
 			var principalWrapper = obj as PrincipalWrapper<T>;
 
 			if(principalWrapper != null)
-				return this.Principal.Equals(principalWrapper.Principal);
+				return this.TypedPrincipal.Equals(principalWrapper.TypedPrincipal);
 
 			return false;
 		}
 
 		public override int GetHashCode()
 		{
-			return this.Principal.GetHashCode();
+			return this.TypedPrincipal.GetHashCode();
 		}
 
 		public virtual bool IsMemberOf(IGroupPrincipal group)
 		{
-			return this.Principal.IsMemberOf(this.GetPrincipal<GroupPrincipal>(group));
+			return this.TypedPrincipal.IsMemberOf((GroupPrincipal) this.GetPrincipal(group));
 		}
 
 		public virtual bool IsMemberOf(IdentityType identityType, string identityValue)
 		{
-			return this.Principal.IsMemberOf(this.Principal.Context, identityType, identityValue);
+			return this.TypedPrincipal.IsMemberOf(this.TypedPrincipal.Context, identityType, identityValue);
 		}
 
 		#endregion
