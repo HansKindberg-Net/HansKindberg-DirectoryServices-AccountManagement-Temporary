@@ -82,6 +82,7 @@
     </Compile>
     <Compile Include="GroupPrincipalWrapperTest.cs" />
     <Compile Include="ComputerPrincipalWrapperTest.cs" />
+    <Compile Include="QueryFilters\AuthenticablePrincipalQueryFilterTest.cs" />
     <Compile Include="UserPrincipalWrapperTest.cs" />
     <None Include="..\Signing\HansKindberg.snk">
       <Link>HansKindberg.snk</Link>
