@@ -178,6 +178,75 @@ namespace HansKindberg.DirectoryServices.AccountManagement
 			}
 		}
 
+		public virtual T Get(string identity)
+		{
+			return this.Get<T>(identity);
+		}
+
+		public virtual T Get(string identity, IdentityType identityType)
+		{
+			return this.Get<T>(identity, identityType);
+		}
+
+		public virtual TPrincipal Get<TPrincipal>(string identity) where TPrincipal : IPrincipal
+		{
+			return this.Get<TPrincipal>(identity, null);
+		}
+
+		public virtual TPrincipal Get<TPrincipal>(string identity, IdentityType identityType) where TPrincipal : IPrincipal
+		{
+			return this.Get<TPrincipal>(identity, (IdentityType?) identityType);
+		}
+
+		[SuppressMessage("Microsoft.Naming", "CA1716:IdentifiersShouldNotMatchKeywords", MessageId = "Get")]
+		protected internal virtual TPrincipal Get<TPrincipal>(string identity, IdentityType? identityType) where TPrincipal : IPrincipal
+		{
+			var principalContext = this.PrincipalConnection.CreatePrincipalContext();
+
+			try
+			{
+				var principal = !identityType.HasValue ? GeneralPrincipal.Get(this.GetPrincipalContext(principalContext), this.GetConcretePrincipalType<TPrincipal>(), identity) : GeneralPrincipal.Get(this.GetPrincipalContext(principalContext), this.GetConcretePrincipalType<TPrincipal>(), identityType.Value, identity);
+
+				if(principal == null)
+				{
+					principalContext.Dispose();
+					return default(TPrincipal);
+				}
+
+				var principalInternal = (IPrincipalInternal) this.Wrap(principal);
+
+				principalInternal.DisposeContextOnDispose = true;
+
+				return (TPrincipal) principalInternal;
+			}
+			catch
+			{
+				principalContext.Dispose();
+
+				throw;
+			}
+		}
+
+		[SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+		protected internal virtual Type GetConcretePrincipalType<TAbstractPrincipal>() where TAbstractPrincipal : IPrincipal
+		{
+			var abstractPrincipalType = typeof(TAbstractPrincipal);
+
+			if(typeof(IComputerPrincipal).IsAssignableFrom(abstractPrincipalType))
+				return typeof(ComputerPrincipal);
+
+			if(typeof(IGroupPrincipal).IsAssignableFrom(abstractPrincipalType))
+				return typeof(GroupPrincipal);
+
+			if(typeof(IUserPrincipal).IsAssignableFrom(abstractPrincipalType))
+				return typeof(UserPrincipal);
+
+			if(typeof(IAuthenticablePrincipal).IsAssignableFrom(abstractPrincipalType))
+				return typeof(AuthenticablePrincipal);
+
+			return typeof(Principal);
+		}
+
 		[SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
 		protected internal virtual Type GetConcretePrincipalTypeToCreate<TEditablePrincipal>() where TEditablePrincipal : IEditablePrincipal
 		{

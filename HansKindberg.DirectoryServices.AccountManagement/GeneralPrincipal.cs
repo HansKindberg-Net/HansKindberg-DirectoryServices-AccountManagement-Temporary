@@ -26,5 +26,19 @@ namespace HansKindberg.DirectoryServices.AccountManagement
 		}
 
 		#endregion
+
+		#region Methods
+
+		public static Principal Get(PrincipalContext context, Type principalType, string identityValue)
+		{
+			return FindByIdentityWithType(context, principalType, identityValue);
+		}
+
+		public static Principal Get(PrincipalContext context, Type principalType, IdentityType identityType, string identityValue)
+		{
+			return FindByIdentityWithType(context, principalType, identityType, identityValue);
+		}
+
+		#endregion
 	}
 }
