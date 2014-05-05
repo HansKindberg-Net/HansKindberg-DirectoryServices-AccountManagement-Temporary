@@ -9,8 +9,8 @@ namespace HansKindberg.DirectoryServices.AccountManagement
 	{
 		#region Properties
 
+		IPrincipalConnection Connection { get; }
 		int PageSize { get; set; }
-		IPrincipalConnection PrincipalConnection { get; }
 		int? SizeLimit { get; set; }
 
 		#endregion

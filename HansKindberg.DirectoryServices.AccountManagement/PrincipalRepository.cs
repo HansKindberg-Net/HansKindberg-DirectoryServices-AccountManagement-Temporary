@@ -16,7 +16,7 @@ namespace HansKindberg.DirectoryServices.AccountManagement
 	{
 		#region Constructors
 
-		public PrincipalRepository(IPrincipalConnection principalConnection) : base(principalConnection) {}
+		public PrincipalRepository(IPrincipalConnection connection) : base(connection) {}
 
 		#endregion
 	}
@@ -25,34 +25,34 @@ namespace HansKindberg.DirectoryServices.AccountManagement
 	{
 		#region Fields
 
+		private readonly IPrincipalConnection _connection;
 		private int _pageSize = int.MaxValue;
-		private readonly IPrincipalConnection _principalConnection;
 
 		#endregion
 
 		#region Constructors
 
-		protected PrincipalRepository(IPrincipalConnection principalConnection)
+		protected PrincipalRepository(IPrincipalConnection connection)
 		{
-			if(principalConnection == null)
-				throw new ArgumentNullException("principalConnection");
+			if(connection == null)
+				throw new ArgumentNullException("connection");
 
-			this._principalConnection = principalConnection;
+			this._connection = connection;
 		}
 
 		#endregion
 
 		#region Properties
 
+		public virtual IPrincipalConnection Connection
+		{
+			get { return this._connection; }
+		}
+
 		public virtual int PageSize
 		{
 			get { return this._pageSize; }
 			set { this._pageSize = value; }
-		}
-
-		public virtual IPrincipalConnection PrincipalConnection
-		{
-			get { return this._principalConnection; }
 		}
 
 		public virtual int? SizeLimit { get; set; }
@@ -63,7 +63,7 @@ namespace HansKindberg.DirectoryServices.AccountManagement
 
 		public virtual TEditablePrincipal Create<TEditablePrincipal>() where TEditablePrincipal : IEditablePrincipal
 		{
-			var principal = this.CreateInternal<TEditablePrincipal>(this.PrincipalConnection.CreatePrincipalContext());
+			var principal = this.CreateInternal<TEditablePrincipal>(this.Connection.CreatePrincipalContext());
 			principal.DisposeContextOnDispose = true;
 
 			return (TEditablePrincipal) principal;
@@ -74,11 +74,11 @@ namespace HansKindberg.DirectoryServices.AccountManagement
 			var principalConnectionCopy = new PrincipalConnection
 			{
 				Container = container,
-				ContextType = this.PrincipalConnection.ContextType,
-				Name = this.PrincipalConnection.Name,
-				Options = this.PrincipalConnection.Options,
-				Password = this.PrincipalConnection.Password,
-				UserName = this.PrincipalConnection.UserName,
+				ContextType = this.Connection.ContextType,
+				Name = this.Connection.Name,
+				Options = this.Connection.Options,
+				Password = this.Connection.Password,
+				UserName = this.Connection.UserName,
 			};
 
 			var principal = this.CreateInternal<TEditablePrincipal>(principalConnectionCopy.CreatePrincipalContext());
@@ -152,7 +152,7 @@ namespace HansKindberg.DirectoryServices.AccountManagement
 					if(queryFilterInternal == null)
 						throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "In the current implementation the query-filter must be of type \"{0}\" or \"{1}\".", typeof(IPrincipalInternal), typeof(IPrincipalQueryFilterInternal)));
 
-					concreteQueryFilter = (IPrincipalInternal) queryFilterInternal.CreateConcreteQueryFilter(this.PrincipalConnection.CreatePrincipalContext());
+					concreteQueryFilter = (IPrincipalInternal) queryFilterInternal.CreateConcreteQueryFilter(this.Connection.CreatePrincipalContext());
 				}
 
 				using(var principalSearcher = new PrincipalSearcher())
@@ -201,7 +201,7 @@ namespace HansKindberg.DirectoryServices.AccountManagement
 		[SuppressMessage("Microsoft.Naming", "CA1716:IdentifiersShouldNotMatchKeywords", MessageId = "Get")]
 		protected internal virtual TPrincipal Get<TPrincipal>(string identity, IdentityType? identityType) where TPrincipal : IPrincipal
 		{
-			var principalContext = this.PrincipalConnection.CreatePrincipalContext();
+			var principalContext = this.Connection.CreatePrincipalContext();
 
 			try
 			{
