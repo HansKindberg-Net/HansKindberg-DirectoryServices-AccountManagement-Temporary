@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.DirectoryServices.AccountManagement;
 using HansKindberg.DirectoryServices.AccountManagement.Collections.Generic;
+using HansKindberg.DirectoryServices.AccountManagement.Connections;
 
 namespace HansKindberg.DirectoryServices.AccountManagement
 {
@@ -9,6 +10,7 @@ namespace HansKindberg.DirectoryServices.AccountManagement
 		#region Properties
 
 		int PageSize { get; set; }
+		IPrincipalConnection PrincipalConnection { get; }
 		int? SizeLimit { get; set; }
 
 		#endregion

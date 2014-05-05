@@ -50,7 +50,7 @@ namespace HansKindberg.DirectoryServices.AccountManagement
 			set { this._pageSize = value; }
 		}
 
-		protected internal virtual IPrincipalConnection PrincipalConnection
+		public virtual IPrincipalConnection PrincipalConnection
 		{
 			get { return this._principalConnection; }
 		}
