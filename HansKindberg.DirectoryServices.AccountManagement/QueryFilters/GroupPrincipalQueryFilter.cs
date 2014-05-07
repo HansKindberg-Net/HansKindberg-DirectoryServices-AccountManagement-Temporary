@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.DirectoryServices.AccountManagement;
+using HansKindberg.DirectoryServices.AccountManagement.Collections.Generic;
 using HansKindberg.DirectoryServices.AccountManagement.Extensions;
 
 namespace HansKindberg.DirectoryServices.AccountManagement.QueryFilters
@@ -63,14 +64,14 @@ namespace HansKindberg.DirectoryServices.AccountManagement.QueryFilters
 			return concreteQueryFilter;
 		}
 
-		public virtual IEnumerable<IPrincipal> GetMembers()
+		public virtual IDisposableEnumerable<IPrincipal> GetMembers()
 		{
-			return new IPrincipal[0];
+			return new EmptyDisposableEnumerable<IPrincipal>();
 		}
 
-		public virtual IEnumerable<IPrincipal> GetMembers(bool recursive)
+		public virtual IDisposableEnumerable<IPrincipal> GetMembers(bool recursive)
 		{
-			return new IPrincipal[0];
+			return new EmptyDisposableEnumerable<IPrincipal>();
 		}
 
 		protected internal override void TransferQueryFilter(T queryFilter)

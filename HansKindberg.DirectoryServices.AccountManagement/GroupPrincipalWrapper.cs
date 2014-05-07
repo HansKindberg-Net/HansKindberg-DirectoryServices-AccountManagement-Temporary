@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.DirectoryServices.AccountManagement;
-using System.Linq;
+using HansKindberg.DirectoryServices.AccountManagement.Collections.Generic;
 using HansKindberg.DirectoryServices.AccountManagement.Extensions;
 
 namespace HansKindberg.DirectoryServices.AccountManagement
@@ -66,20 +66,14 @@ namespace HansKindberg.DirectoryServices.AccountManagement
 
 		#region Methods
 
-		public virtual IEnumerable<IPrincipal> GetMembers()
+		public virtual IDisposableEnumerable<IPrincipal> GetMembers()
 		{
-			using(var members = this.TypedPrincipal.GetMembers())
-			{
-				return members.Select(this.Wrap);
-			}
+			return new DisposableEnumerableWrapper<Principal, IPrincipal>(this.TypedPrincipal.GetMembers(), this.Wrap);
 		}
 
-		public virtual IEnumerable<IPrincipal> GetMembers(bool recursive)
+		public virtual IDisposableEnumerable<IPrincipal> GetMembers(bool recursive)
 		{
-			using(var members = this.TypedPrincipal.GetMembers(recursive))
-			{
-				return members.Select(this.Wrap);
-			}
+			return new DisposableEnumerableWrapper<Principal, IPrincipal>(this.TypedPrincipal.GetMembers(recursive), this.Wrap);
 		}
 
 		#endregion

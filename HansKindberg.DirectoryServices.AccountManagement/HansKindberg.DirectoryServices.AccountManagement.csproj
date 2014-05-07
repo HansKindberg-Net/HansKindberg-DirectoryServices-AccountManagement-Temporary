@@ -48,6 +48,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AdvancedFiltersWrapper.cs" />
+    <Compile Include="Collections\Generic\DisposableEnumerableWrapper.cs" />
+    <Compile Include="Collections\Generic\EmptyDisposableEnumerable.cs" />
+    <Compile Include="Collections\Generic\EnumerableWrapper.cs" />
+    <Compile Include="Collections\Generic\EnumeratorWrapper.cs" />
     <Compile Include="Extensions\DefaultPrincipalContextExtension.cs" />
     <Compile Include="Extensions\IPrincipalContextExtension.cs" />
     <Compile Include="Extensions\PrincipalContextExtension.cs" />

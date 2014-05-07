@@ -101,6 +101,37 @@ namespace HansKindberg.DirectoryServices.AccountManagement.IntegrationTests
 		}
 
 		[TestMethod]
+		public void Get_IfGettingAGroupPrincipal_ItShouldBeAbleToIterateItsMembers()
+		{
+			var memberNames = new List<string>();
+
+			var principalRepository = new PrincipalRepository(CreateDefaultDomainPrincipalConnection());
+
+			using(var groupPrincipal = principalRepository.Get<IGroupPrincipal>("Domain Users", IdentityType.Name))
+			{
+				using(var members = groupPrincipal.GetMembers())
+				{
+					foreach(var member in members)
+					{
+						using(member)
+						{
+							memberNames.Add(member.Name);
+						}
+					}
+				}
+			}
+
+			Assert.AreEqual(6, memberNames.Count);
+
+			Assert.AreEqual("Administrator", memberNames.ElementAt(0));
+			Assert.AreEqual("krbtgt", memberNames.ElementAt(1));
+			Assert.AreEqual("FirstName01 LastName01", memberNames.ElementAt(2));
+			Assert.AreEqual("FirstName02 LastName02", memberNames.ElementAt(3));
+			Assert.AreEqual("User03", memberNames.ElementAt(4));
+			Assert.AreEqual("User1000", memberNames.ElementAt(5));
+		}
+
+		[TestMethod]
 		public void Save_ShouldHandleUserPrincipal()
 		{
 			const string userName = "User1000";
