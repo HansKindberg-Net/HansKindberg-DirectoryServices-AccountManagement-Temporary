@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.DirectoryServices.AccountManagement;
 using System.Security.Principal;
+using HansKindberg.DirectoryServices.AccountManagement.Collections.Generic;
 using HansKindberg.DirectoryServices.AccountManagement.Extensions;
 
 namespace HansKindberg.DirectoryServices.AccountManagement.QueryFilters
@@ -60,9 +60,9 @@ namespace HansKindberg.DirectoryServices.AccountManagement.QueryFilters
 			get { return null; }
 		}
 
-		public virtual IEnumerable<IGroupPrincipal> Groups
+		public virtual IDisposableEnumerable<IGroupPrincipal> Groups
 		{
-			get { return new IGroupPrincipal[0]; }
+			get { return new EmptyDisposableEnumerable<IGroupPrincipal>(); }
 		}
 
 		public virtual Guid? Guid

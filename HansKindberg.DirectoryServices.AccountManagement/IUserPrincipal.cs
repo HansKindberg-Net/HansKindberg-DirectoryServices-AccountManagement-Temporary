@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using HansKindberg.DirectoryServices.AccountManagement.Collections.Generic;
 
 namespace HansKindberg.DirectoryServices.AccountManagement
 {
@@ -6,7 +6,7 @@ namespace HansKindberg.DirectoryServices.AccountManagement
 	{
 		#region Properties
 
-		IEnumerable<IGroupPrincipal> AuthorizationGroups { get; }
+		IDisposableEnumerable<IGroupPrincipal> AuthorizationGroups { get; }
 		string EmailAddress { get; set; }
 		string EmployeeId { get; set; }
 		string GivenName { get; set; }

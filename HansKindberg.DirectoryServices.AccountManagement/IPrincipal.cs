@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.DirectoryServices.AccountManagement;
 using System.Security.Principal;
+using HansKindberg.DirectoryServices.AccountManagement.Collections.Generic;
 
 namespace HansKindberg.DirectoryServices.AccountManagement
 {
@@ -14,7 +14,7 @@ namespace HansKindberg.DirectoryServices.AccountManagement
 		string Description { get; set; }
 		string DisplayName { get; set; }
 		string DistinguishedName { get; }
-		IEnumerable<IGroupPrincipal> Groups { get; }
+		IDisposableEnumerable<IGroupPrincipal> Groups { get; }
 		Guid? Guid { get; }
 		string Name { get; set; }
 		string SamAccountName { get; set; }

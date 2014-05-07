@@ -7,6 +7,7 @@ namespace HansKindberg.DirectoryServices.AccountManagement.Extensions
 		#region Methods
 
 		IPrincipal Wrap(Principal principal);
+		TAbstractPrincipal Wrap<TConcretePrincipal, TAbstractPrincipal>(TConcretePrincipal principal) where TConcretePrincipal : Principal where TAbstractPrincipal : IPrincipal;
 
 		#endregion
 	}

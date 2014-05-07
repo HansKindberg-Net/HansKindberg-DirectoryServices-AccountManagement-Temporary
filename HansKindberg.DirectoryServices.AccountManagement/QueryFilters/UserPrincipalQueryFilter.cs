@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.DirectoryServices.AccountManagement;
+using HansKindberg.DirectoryServices.AccountManagement.Collections.Generic;
 using HansKindberg.DirectoryServices.AccountManagement.Extensions;
 
 namespace HansKindberg.DirectoryServices.AccountManagement.QueryFilters
@@ -23,9 +23,9 @@ namespace HansKindberg.DirectoryServices.AccountManagement.QueryFilters
 
 		#region Properties
 
-		public IEnumerable<IGroupPrincipal> AuthorizationGroups
+		public virtual IDisposableEnumerable<IGroupPrincipal> AuthorizationGroups
 		{
-			get { return new IGroupPrincipal[0]; }
+			get { return new EmptyDisposableEnumerable<IGroupPrincipal>(); }
 		}
 
 		public virtual string EmailAddress

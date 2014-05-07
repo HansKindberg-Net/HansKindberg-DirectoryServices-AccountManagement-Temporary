@@ -55,6 +55,14 @@ namespace HansKindberg.DirectoryServices.AccountManagement.Extensions
 			return Instance.Wrap(principal);
 		}
 
+		public static TAbstractPrincipal Wrap<TConcretePrincipal, TAbstractPrincipal>(this object value, TConcretePrincipal principal) where TConcretePrincipal : Principal where TAbstractPrincipal : IPrincipal
+		{
+			if(value == null)
+				throw new ArgumentNullException("value");
+
+			return Instance.Wrap<TConcretePrincipal, TAbstractPrincipal>(principal);
+		}
+
 		#endregion
 	}
 }

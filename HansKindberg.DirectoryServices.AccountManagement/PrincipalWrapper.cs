@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.DirectoryServices.AccountManagement;
 using System.Linq;
 using System.Security.Principal;
+using HansKindberg.DirectoryServices.AccountManagement.Collections.Generic;
 using HansKindberg.DirectoryServices.AccountManagement.Extensions;
 
 namespace HansKindberg.DirectoryServices.AccountManagement
@@ -88,15 +88,9 @@ namespace HansKindberg.DirectoryServices.AccountManagement
 			get { return this.TypedPrincipal.DistinguishedName; }
 		}
 
-		public virtual IEnumerable<IGroupPrincipal> Groups
+		public virtual IDisposableEnumerable<IGroupPrincipal> Groups
 		{
-			get
-			{
-				using(var groups = this.TypedPrincipal.GetGroups())
-				{
-					return groups.Cast<GroupPrincipal>().Select(groupPrincipal => (IGroupPrincipal) (GroupPrincipalWrapper) groupPrincipal);
-				}
-			}
+			get { return new DisposableEnumerableWrapper<GroupPrincipal, IGroupPrincipal>(this.TypedPrincipal.GetGroups().Cast<GroupPrincipal>(), this.Wrap<GroupPrincipal, IGroupPrincipal>); }
 		}
 
 		public virtual Guid? Guid

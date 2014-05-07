@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.DirectoryServices.AccountManagement;
 using System.Linq;
+using HansKindberg.DirectoryServices.AccountManagement.Collections.Generic;
+using HansKindberg.DirectoryServices.AccountManagement.Extensions;
 
 namespace HansKindberg.DirectoryServices.AccountManagement
 {
@@ -44,15 +45,9 @@ namespace HansKindberg.DirectoryServices.AccountManagement
 
 		#region Properties
 
-		public virtual IEnumerable<IGroupPrincipal> AuthorizationGroups
+		public virtual IDisposableEnumerable<IGroupPrincipal> AuthorizationGroups
 		{
-			get
-			{
-				using(var authorizationGroups = this.TypedPrincipal.GetAuthorizationGroups())
-				{
-					return authorizationGroups.Cast<GroupPrincipal>().Select(groupPrincipal => (IGroupPrincipal) (GroupPrincipalWrapper) groupPrincipal);
-				}
-			}
+			get { return new DisposableEnumerableWrapper<GroupPrincipal, IGroupPrincipal>(this.TypedPrincipal.GetAuthorizationGroups().Cast<GroupPrincipal>(), this.Wrap<GroupPrincipal, IGroupPrincipal>); }
 		}
 
 		public virtual string EmailAddress
