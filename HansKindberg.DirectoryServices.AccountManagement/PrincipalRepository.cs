@@ -167,10 +167,6 @@ namespace HansKindberg.DirectoryServices.AccountManagement
 					}
 				}
 			}
-			catch(Exception exception)
-			{
-				throw new InvalidOperationException("Could not execute the search.", exception);
-			}
 			finally
 			{
 				if(disposeConcreteQueryFilter && concreteQueryFilter != null)
