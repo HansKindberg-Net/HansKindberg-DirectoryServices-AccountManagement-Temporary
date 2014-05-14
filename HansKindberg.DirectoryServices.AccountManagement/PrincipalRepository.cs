@@ -167,6 +167,13 @@ namespace HansKindberg.DirectoryServices.AccountManagement
 					}
 				}
 			}
+			catch
+			{
+				if(disposeConcreteQueryFilter && concreteQueryFilter != null && concreteQueryFilter.Context != null)
+					concreteQueryFilter.Context.Dispose();
+
+				throw;
+			}
 			finally
 			{
 				if(disposeConcreteQueryFilter && concreteQueryFilter != null)
